@@ -1,16 +1,20 @@
 ---
 name: write-spec
-description: Write or revise a work-item spec (features/PL-N-<name>/spec.md) from conversation, braindump docs, and user decisions. Use when starting a new numbered work item (PL-N) or rescoping an existing one, before any plan is written.
+description: Write or revise a work-item spec (features/PL-N-<name>/spec.md) from conversation, braindump docs, and user decisions. Use when starting a new numbered work item (PL-N) or rescoping an existing one, before any plan is written. Runs in the orchestrator session only — never delegated.
 ---
 
 # write-spec
 
 Turns conversation + reference docs into a concise work-item spec. The spec is the single source of what a work item must achieve; the plan (see `write-plan`) is derived from it and can be deleted/recreated at any time.
 
+## Role
+
+This skill runs in the **orchestrator session only**. It depends on the live conversation, which subagents never see. Everything downstream — `write-plan`, `execute-plan` — is delegated to subagents, so the spec is the *only* context they get: it must be fully readable without the conversation.
+
 ## Workflow
 
 1. Locate the work item directory: `features/PL-<number>-<short-name>/`. If rescoping an existing item, edit its `spec.md` and delete any stale `plan.md` — spec first, plan later.
-2. Read the reference docs the user points to (e.g. `features/braindump/*`) and any prior specs.
+2. Read the reference docs the user points to (e.g. `features/braindump/*`). Do not read prior tickets' specs/plans unless the user explicitly refers to them — see `new-feature`.
 3. Extract from the conversation: the goal, the tech stack, decisions, and what the user explicitly wants included.
 4. Write `spec.md` using the template below. Keep it short.
 
@@ -48,3 +52,4 @@ State what exists now and that later work items create the rest.
 - Don't add tech the user didn't choose; capture their exact picks (e.g. "shadcn, not Radix directly").
 - If the user says "simple", the spec stays minimal.
 - The spec must be readable without the conversation.
+- After writing the spec, the next step is dispatching the `planner` subagent (see `write-plan`) — never plan or execute in the orchestrator session.
