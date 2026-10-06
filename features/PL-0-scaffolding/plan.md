@@ -256,7 +256,7 @@ export default function App() {
 
 Done when: `pnpm build` and `pnpm test` both pass.
 
-### 12. [ ] Full verification
+### 12. [x] Full verification
 
 ```bash
 pnpm install
@@ -271,7 +271,7 @@ Then ask the user to check in the preview browser tab:
 - `manifest.webmanifest` and the service worker are registered (DevTools → Application)
 - The browser offers "Install app" (Chrome/Edge)
 
-### 13. [ ] Commit
+### 13. [x] Commit
 
 ```bash
 git add -A
