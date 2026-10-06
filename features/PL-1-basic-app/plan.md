@@ -237,7 +237,7 @@ Then hand this browser checklist to the user (microphone cannot be verified by c
 - Click **Listening** → recording indicator disappears, transcription stays
 - Reload → everything is gone (expected: nothing is stored yet)
 
-### 6. [ ] Commit
+### 6. [x] Commit
 
 ```bash
 git add -A
@@ -246,7 +246,7 @@ git commit -m "PL-1: basic record + live transcription app"
 
 Done when: `git log --oneline` shows the commit.
 
-### 7. [ ] Final checkbox pass
+### 7. [x] Final checkbox pass
 
 Re-read this plan and mark any remaining completed steps `[x]`.
 
