@@ -43,6 +43,7 @@ Then review the plan against the spec before dispatching `execute-plan`:
 - When a step's **Done when** passes, mark that step's checkbox `[x]` in this file before starting the next step.
 - If a command fails: stop, report the exact error, current state, and fix options, then wait. Do not improvise or skip.
 - Never edit files outside the repo root.
+- Never run `git commit` — the commit step is **held**: stop before it and report the prepared commit (exact command + message); the orchestrator asks the user for approval.
 
 ### Step rules
 
@@ -51,7 +52,7 @@ Then review the plan against the spec before dispatching `execute-plan`:
 - Every step ends with a `Done when:` check that is objectively verifiable (a passing command, an existing file, a passing test).
 - Prefer generators for binary assets (e.g. `@vite-pwa/assets-generator` for PWA icons) — never expect the executor to author images.
 - Order steps so code under test is written before (or in the same step as) its test.
-- End with: full verification (`pnpm install && pnpm build && pnpm test`, preview server started in background, curl status checks) + a browser checklist the **user** performs (the executor puts it in its report; the orchestrator hands it to the user), then a commit step with the exact `git add -A && git commit -m "PL-N: ..."` message, then a final step to mark remaining checkboxes.
+- End with: full verification (`pnpm install && pnpm build && pnpm test`, preview server started in background, curl status checks) + a browser checklist the **user** performs (the executor puts it in its report; the orchestrator hands it to the user), then a commit step with the exact `git add -A && git commit -m "PL-N: ..."` message — the commit step is **held**: the executor stops before it, the orchestrator asks the user for approval and runs it (repo rule, see `AGENTS.md`) — then a final step to mark remaining checkboxes.
 
 ### Toolchain drift (verified 2026-10 in this repo)
 

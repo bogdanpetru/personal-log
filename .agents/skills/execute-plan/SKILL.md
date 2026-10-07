@@ -18,9 +18,9 @@ Repo root: /Users/b/dev/personal-log
 Plan: features/PL-<number>-<name>/plan.md
 Skill: .agents/skills/execute-plan/SKILL.md — read it and follow it exactly.
 
-Execute all steps in order, marking each checkbox [x] in the plan before moving on.
+Execute all steps in order, marking each checkbox [x] in the plan before moving on. Stop before any commit step — never run git commit.
 
-Report back: steps done, verification results (commands and outcomes), deviations with reasons, the browser checklist for the user, and the commit hash if the plan has a commit step.
+Report back: steps done, verification results (commands and outcomes), deviations with reasons, the browser checklist for the user, and the prepared commit (exact command + message) if the plan has a commit step.
 ```
 
 While it runs: do not duplicate its work.
@@ -28,10 +28,11 @@ While it runs: do not duplicate its work.
 After it reports, verify independently — never report ticket results from the subagent's claims alone:
 
 1. Run the plan's own verification commands yourself (`pnpm build`, `pnpm test`, and anything else the plan requires).
-2. Check `git log --oneline -3` and review the diff if a commit step ran.
+2. Review the working-tree diff — nothing has been committed yet.
 3. If verification fails: re-dispatch the executor with the exact failure, or fix directly if trivial — tell the user either way.
 4. Hand the browser/manual checklist to the user yourself — subagents cannot reach the user.
 5. Report the result to the user from your own verification.
+6. Commit only with the user's approval (repo rule, see `AGENTS.md`): propose the plan's exact commit (what + message), wait for the OK, then run the exact commit command yourself. Never commit unilaterally.
 
 ## Role: executor subagent — workflow
 
@@ -47,7 +48,7 @@ After it reports, verify independently — never report ticket results from the 
    - Wait for the orchestrator (report back with the failure instead of retrying).
 4. If a command fails from toolchain drift (a flag or option no longer exists, a version changed), you may read the tool's `--help` and use the tool's own suggested alternative, then add a short note to that plan step recording the deviation. Anything beyond that: stop and report.
 5. For user-verification steps (preview/browser checks): start the server in the background (`nohup ... &`), verify what is verifiable via curl and HTTP status codes, and put the browser checklist in your report back to the orchestrator — you cannot reach the user.
-6. Commit only in the plan's exact commit step, with the plan's exact message.
+6. Never run `git commit` — commits require the user's explicit approval (repo rule, see `AGENTS.md`). When you reach the plan's commit step, stop before executing it, leave its checkbox unchecked, and put the exact commit command and message in your report; the orchestrator asks the user and runs it after approval.
 7. Finish with the report described in the orchestrator's task prompt.
 
 ## Rules
