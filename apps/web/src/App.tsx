@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { useRecorder } from "@/stores/recorder";
+import { useRecorder } from "@/hooks/useRecorder";
 
 export default function App() {
   const { status, transcript, partial, supported, start, stop } =
