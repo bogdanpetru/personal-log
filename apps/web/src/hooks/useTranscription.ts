@@ -1,12 +1,14 @@
 import { useMemo, useRef, useState } from "react";
+import type { TranscriptionOptions } from "@personal-log/plugin-api";
 import { defaultTranscriptionPlugin } from "@/lib/plugins";
 
 interface UseTranscription {
   transcript: string;
   partial: string;
   supported: boolean;
-  start: () => Promise<void>;
+  start: (options?: TranscriptionOptions) => Promise<void>;
   stop: () => void;
+  resume: () => Promise<void>;
 }
 
 export function useTranscription(): UseTranscription {
@@ -17,25 +19,48 @@ export function useTranscription(): UseTranscription {
     [],
   );
 
-  const stopRef = useRef<(() => Promise<unknown>) | null>(null);
+  const stopSessionRef = useRef<(() => Promise<unknown>) | null>(null);
+  // Text accumulated before the currently running recognition session. Every
+  // session reports its own accumulated final text, so appending across
+  // pause/resume boundaries needs the pre-session text as the base.
+  const baseRef = useRef("");
+  // Options of the current recording; resume() reuses them, so the language
+  // never switches live mid-recording (spec PL-4).
+  const optionsRef = useRef<TranscriptionOptions | undefined>(undefined);
 
-  const start = async () => {
-    const session = await defaultTranscriptionPlugin.startLive();
+  const beginSession = async () => {
+    const session = await defaultTranscriptionPlugin.startLive(optionsRef.current);
     session.onFinalResult((text) => {
-      setTranscript(text);
+      const base = baseRef.current;
+      setTranscript(base === "" ? text : `${base} ${text}`);
     });
     session.onPartialResult((text) => {
       setPartial(text);
     });
-    stopRef.current = () => session.stop();
+    stopSessionRef.current = () => session.stop();
   };
 
+  const start = async (options?: TranscriptionOptions) => {
+    optionsRef.current = options;
+    baseRef.current = "";
+    setTranscript("");
+    setPartial("");
+    await beginSession();
+  };
+
+  // Ends the recognition session only. Keeps the accumulated transcript —
+  // used for pausing a live recording and for stopping it entirely.
   const stop = () => {
-    if (!stopRef.current) return;
-    void stopRef.current();
-    stopRef.current = null;
+    if (!stopSessionRef.current) return;
+    void stopSessionRef.current();
+    stopSessionRef.current = null;
     setPartial("");
   };
 
-  return { transcript, partial, supported, start, stop };
+  const resume = async () => {
+    baseRef.current = transcript;
+    await beginSession();
+  };
+
+  return { transcript, partial, supported, start, stop, resume };
 }
