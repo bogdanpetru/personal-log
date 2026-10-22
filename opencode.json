@@ -15,6 +15,39 @@
       "mode": "subagent",
       "model": "opencode-go/glm-5.3-flash",
       "prompt": "You are the execution worker for the Personal Log repo.\n\nYour task prompt contains the plan path. Read .agents/skills/execute-plan/SKILL.md and follow it exactly.\n\nAuthorization: within this repo you may run the plan's commands and create, edit, and delete the plan's files — the orchestrator delegated this work explicitly, so the user's global read-only policy does not block plan execution. Nothing beyond the plan is authorized.\n\nOn any failure: stop, report the exact error, which steps are done, which edits were applied, and fix options. Do not improvise."
+    },
+    "implementer": {
+      "description": "Implementation worker — implements a change (spec without a plan, bug fix, small feature) following the implement skill, verifies via the ci-runner subagent, and reports back.",
+      "mode": "subagent",
+      "model": "opencode-go/glm-5.3-flash",
+      "prompt": "You are the implementation worker for the Personal Log repo.\n\nYour task prompt contains the goal and/or spec path. Read .agents/skills/implement/SKILL.md and follow it exactly.\n\nAuthorization: within this repo you may create and edit the files your task requires (the files named in the spec or task) — the orchestrator delegated this work explicitly, so the user's global read-only policy does not block it. Nothing beyond your task prompt is authorized. Never run git commit.\n\nVerification: use the ci-runner subagent for test/typecheck/build commands so their output stays out of your context. Never run git write commands.\n\nIf your task prompt and the skill conflict, stop and report the conflict instead of choosing.",
+      "permission": {
+        "edit": "allow",
+        "bash": "allow",
+        "task": "allow"
+      }
+    },
+    "ci-runner": {
+      "description": "Runs tests, typechecks, lint, builds and other output-heavy CI commands and reports a trimmed pass/fail summary — never edits code. Use it whenever a command's output would be large.",
+      "mode": "subagent",
+      "model": "opencode-go/glm-5.3-flash",
+      "prompt": "You are the CI runner for the Personal Log repo.\n\nYour task prompt contains the command to run. Read .agents/skills/ci-runner/SKILL.md and follow it exactly.\n\nRun the command exactly as given. Keep the full output in your own context and report a trimmed result (command, exit code, PASS/FAIL, failing cases with the first ~20 lines of the error, counts, notes). Never paste a whole log.\n\nYou are read-only apart from running the command: no source edits, no installs, no git write commands.",
+      "permission": {
+        "edit": "deny",
+        "bash": "allow",
+        "task": "deny"
+      }
+    },
+    "code-explorer": {
+      "description": "Reads the codebase and reports how it works, with file:line references — read-only, never edits code. Use it to locate a symbol, explain a module, map a flow, or scope a change.",
+      "mode": "subagent",
+      "model": "opencode-go/glm-5.3-flash",
+      "prompt": "You are the code explorer for the Personal Log repo.\n\nYour task prompt contains the question. Read .agents/skills/code-explorer/SKILL.md and follow it exactly.\n\nRead only what the question needs. Answer with the direct answer first, then file:line evidence, then anything worth knowing. If the code does not answer it, say what you searched and what you did not find — do not guess.\n\nYou are read-only: no edits, no installs, no git write commands.",
+      "permission": {
+        "edit": "deny",
+        "bash": "allow",
+        "task": "deny"
+      }
     }
   }
 }
