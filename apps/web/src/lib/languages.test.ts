@@ -26,10 +26,10 @@ describe("language table", () => {
     ).toBe(true);
   });
 
-  it("derives native and English labels from Intl.DisplayNames", () => {
+  it("derives native and short English labels from Intl.DisplayNames", () => {
     const german = LANGUAGES.find((language) => language.code === "de-DE");
     expect(german?.label).toBe("Deutsch");
-    expect(german?.english).toBe("German (Germany)");
+    expect(german?.english).toBe("German");
   });
 
   it("renders the native label from the primary subtag only", () => {
@@ -38,13 +38,14 @@ describe("language table", () => {
     expect(japanese?.english).not.toContain("日本語");
   });
 
-  it("keeps variant codes sharing a primary subtag distinguishable", () => {
-    const chinese = LANGUAGES.filter((language) =>
-      language.code.startsWith("zh-"),
-    );
-    const labels = new Set(chinese.map((language) => language.label));
-    expect(chinese.length).toBeGreaterThan(1);
-    expect(labels.size).toBe(chinese.length);
+  it("drops the region qualifier from English names", () => {
+    const chinese = LANGUAGES.find((language) => language.code === "zh-CN");
+    expect(chinese?.english).toBe("Chinese");
+  });
+
+  it("has one entry per primary language", () => {
+    const primaries = LANGUAGES.map((language) => language.code.split("-")[0]);
+    expect(new Set(primaries).size).toBe(primaries.length);
   });
 });
 

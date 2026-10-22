@@ -39,12 +39,10 @@ test("search filters by native name, ignoring diacritics", () => {
 });
 
 test("search matches the English name too (chinese → 中文)", () => {
-  const { openPopup, searchBox } = renderSelect();
+  const { openPopup, searchBox, option } = renderSelect();
   openPopup();
   fireEvent.change(searchBox(), { target: { value: "chinese" } });
-  // Both Chinese variants match on their English names; the component test
-  // above pins their native labels to be distinct.
-  expect(screen.getAllByRole("option", { name: /Chinese/ })).toHaveLength(2);
+  expect(option(/Chinese/)).toBeInTheDocument();
 });
 
 test("clicking an option selects its code and closes the list", () => {

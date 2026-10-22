@@ -12,7 +12,7 @@ export function PauseResumeButton({
       type="button"
       aria-label={paused ? "Resume recording" : "Pause recording"}
       onClick={onToggle}
-      className="h-10 cursor-pointer rounded-full border border-border px-4 text-sm transition-colors hover:bg-muted/50"
+      className="h-10 cursor-pointer rounded-[3px] border border-border px-4 text-sm transition-colors hover:bg-muted/50"
     >
       {paused ? "Resume" : "Pause"}
     </button>

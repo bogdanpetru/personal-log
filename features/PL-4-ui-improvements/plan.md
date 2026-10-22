@@ -520,7 +520,8 @@ button doubles as stop) and is replaced by:
 
 - [ ] `pnpm dev` opens the app at http://localhost:5173 (Chrome); [initial] shows
       the language dropdown above the big red round button — no timer, no stop
-      pill, no playback row
+      pill, no playback row — and the record button is vertically centered below
+      the header
 - [ ] The dropdown defaults to the browser/system language, lists the curated
       languages with native names, is searchable, and is disabled while recording
 - [ ] Click record: the red button is GONE — a ticking m:ss timer above a
@@ -540,6 +541,18 @@ button doubles as stop) and is replaced by:
       back to the initial state, no playback row
 - [ ] Starting again from readonly discards the old playback and rewinds the timer;
       a new recording uses the language selected before it started
+- [ ] The header bar spans the top with a light bottom border: language selector on
+      the left, and while recording the stop button appears on the right
+- [ ] The controls sit just below the header (not vertically centered anymore)
+- [ ] In readonly, the record button is gone — only the playback row and the
+      transcript remain
+- [ ] The page never scrolls: the transcript fills the remaining space down to the
+      page bottom and scrolls internally once long enough
+- [ ] Transcript text is left-aligned; line breaks render as new lines
+- [ ] Pause inserts a line break — resume continues on a new paragraph line
+- [ ] While recording, the transcript auto-scrolls to the bottom as text arrives
+- [ ] Pause/resume, stop, play/pause, and the select trigger have a small (~3px)
+      radius; the record button is still a circle
 - [ ] In a browser without SpeechRecognition the record button is disabled
 
 ### Post-execution refactor (user request, 2026-10-09)
@@ -618,8 +631,138 @@ generated at runtime:
 - Tests updated to real CLDR facts: casing, variant distinctness, English search
   matching both Chinese variants, Enter-select query `"swedish"`. 29/29 web tests,
   typecheck + lint clean.
+- Follow-up (same day, user: "keep the first part, drop the secondary — it just
+  duplicates the main one"): variant codes (`en-GB`, `pt-PT`, `zh-TW`) removed —
+  one entry per primary language; parenthetical qualifiers stripped from English
+  names ("German (Germany)" → "German") and no native label is region-qualified
+  anymore. List went 66 → 63 entries of short names ("Deutsch | German").
 
-### 6. [ ] Commit (HELD — stop before running)
+### 5d. [x] Amendment 2 — header bar; readonly without record button (user request, 2026-10-10, off-script)
+
+Two mid-turn directives arrived while the Amendment 1 commit (`465382a`) was landing:
+
+- **Header bar:** `AppShell` takes a `header` slot — full-width bar with a light
+  bottom border (`border-b border-border`), language selector left / stop button
+  right while recording. `StopButton` is a normal header pill now (fixed-overlay
+  positioning removed). `main` no longer centers vertically: the controls sit
+  just below the header, the transcript below them.
+- **[readonly] drops the record button** (per spec Amendment 2): `RecorderControls`
+  readonly branch renders `Playback` only; the initial state keeps the record
+  button. Known consequence accepted for now: no in-app path back to recording
+  from readonly — a later "new recording" affordance can add it; a reload resets.
+- Browser checklist extended (header border/positions, readonly playback-only).
+- Verified: 29/29 web tests, typecheck + lint clean (same pre-existing warning).
+- **Uncommitted** — the follow-up commit awaits explicit user approval.
+
+### 5e. [x] Amendment 3 — transcript panel; small button radius (user request, 2026-10-10, off-script)
+
+- **Page locked to the viewport:** `AppShell` main is `flex-1 min-h-0` with ~20px
+  padding (`px-5 py-5`); `Transcript` renders as a `flex-1 min-h-0 overflow-y-auto`
+  panel — the transcript reaches the page bottom and scrolls internally; the page
+  itself never scrolls.
+- **Transcript:** left-aligned, keeps `whitespace-pre-wrap` (pre-style), renders
+  nothing while empty. `Transcript.test.tsx` (3 tests: empty → null, muted partial,
+  newline preserved via raw `textContent` — `toHaveTextContent` collapses
+  whitespace, so it misses `\n`).
+- **Pause → new paragraph:** `useTranscription.newParagraph()` appends `\n` (only
+  over non-empty text); App calls it on pause. Session finals joined after a
+  trailing `\n` skip the separating space. `resume()` seeds the base from the
+  text including the break.
+- **Auto-scroll:** `Transcript` takes `autoScroll` — while true (recording), each
+  transcript/partial change scrolls the panel to the bottom.
+- **Normal buttons `rounded-[3px]`:** PauseResumeButton, StopButton, Playback
+  play/pause pill, LanguageSelect trigger (record button stays a circle).
+- Verified: 32/32 web tests, typecheck + lint clean (same pre-existing warning).
+- **Uncommitted together with 5d — one follow-up commit pending user approval.**
+
+### 5f. [x] Initial-state centering; spec consolidation (user request, 2026-10-10, off-script)
+
+- **[initial] centers the record button — and only the initial state centers:**
+  first attempt put `justify-center` on `AppShell` main, but a *silent* recording
+  (no transcript text yet) then centered the timer/pause controls mid-screen
+  (user: "that is not fine"; playback must never center either). Corrected:
+  `AppShell` main is plain top-aligned again, and the centering lives in
+  `RecorderControls`' initial branch — a `flex-1 items-center justify-center`
+  wrapper around the record button only.
+- **Spec consolidation** (user: everything discussed must be reflected in spec
+  and plan): `spec.md` gained **Amendment 4** — searchable combobox design,
+  `Intl.DisplayNames`-generated names (no enumeration API exists; curated code
+  list, native + short English names, one entry per primary language, no region
+  qualifiers), selection behavior restated — and a **"Conventions"** section
+  recording the accumulated review conventions: dark-only Gruvbox tokens, flat
+  controls, pointer cursors, real-color hover shifts, 3px normal buttons.
+- Language follow-up from 5c (variant codes dropped, short names) is annotated
+  there and restated in spec Amendment 4.
+- Verified: 33/33 web tests, typecheck + lint clean (same pre-existing warning).
+- **Uncommitted together with 5d/5e — one follow-up commit pending user approval.**
+
+### 5g. [x] Transcript deduplication — engine re-delivery & lingering partial (user request, 2026-10-10, off-script)
+
+The user reported duplicated transcript text "especially when stopping talking" and
+asked for an algorithm that detects when the in-progress text restates the committed
+text. Diagnosis found three sources:
+
+1. **Re-finalization:** the engine can finalize the same result again on silence with
+   fuller text — the plugin appended every final unconditionally (`finalText +=
+   result[0].transcript + " "`), so the restatement repeated.
+2. **Restart re-delivery:** the engine ends recognition on silence and restarts the
+   same recognition object, which re-delivers the last finalized segment — appended
+   again.
+3. **Lingering partial:** the ephemeral interim text stayed on screen next to the
+   committed double of itself when its content was finalized.
+
+Fix, layered:
+
+- **`packages/plugin-api/src/append-transcript.ts` (new, shared rule).**
+  `appendTranscript(base, next, minPartialOverlap = 12)` joins committed text with
+  newly recognized text, trimming the overlap when `next` begins with what already
+  ends `base`: a full repeat is always trimmed; a partial overlap only once it is at
+  least `minPartialOverlap` characters (long speech could not legitimately be
+  repeating a short phrase — a short legit repeat like "the cat" → "the cat sat" is
+  kept); callers that know a recognition restart just happened pass `1` so any
+  restatement of the committed tail trims. A base ending in `\n` (pause paragraph)
+  joins directly, and a trimmed remainder never doubles the separator.
+- **Plugin (`NativeSpeechPlugin.ts`) rewritten.** Finals accumulate into a segment
+  map keyed by result index: a longer restatement of a recorded index replaces it
+  (refinement), an identical or shorter one is dropped (re-delivery). On restart
+  (`onend` while active) the run's finals fold into committed text through
+  `appendTranscript(…, 1)` — the re-delivered tail trims against it — and the map
+  clears; `stop()` folds the same way and returns the committed text. A session total
+  unchanged from the last emit no longer fires `onFinal` (no-op re-emit).
+- **Hook (`useTranscription.ts`).** `onFinalResult` now clears the partial
+  (`setPartial("")` — the interim disappears exactly when it is committed) and joins
+  via `appendTranscript(baseRef.current, text)` in place of the manual join.
+- **Tests.** `FakeSpeechRecognition.emit` gained an explicit `resultIndex` parameter
+  (default unchanged) so events can target later indices like the engine's result
+  list; existing expectations are unchanged (the accumulation test now emits its
+  second final at index 1). New tests: same-index refinement replaces instead of
+  repeating, identical re-finalization is dropped, restart re-delivery never
+  duplicates the committed tail. `appendTranscript` has 8 tests of its own —
+  living in **`packages/plugins/transcription-native/src/append-transcript.test.ts`**,
+  because `plugin-api` owns no test infrastructure (see deviation).
+- Verified: `pnpm -r typecheck` clean, 19 plugin tests + 33 web tests pass, lint
+  clean except the pre-existing `components/ui/button.tsx` warning.
+- **Uncommitted** — joins the held follow-up commit (updated path list below).
+
+> Deviation (pnpm detour): giving `plugin-api` its own vitest setup (a `test`
+> script + `vite`/`vitest`/`jsdom` devDeps, mirroring the plugin package) failed —
+> pnpm resolved bare `vitest@5.0.3` / `vite@8.3.3` importers while the store only
+> materializes peer-suffixed variants, leaving dangling symlinked `node_modules`
+> (TS2688 "Cannot find type definition file for 'vitest/globals'"). Re-resolving
+> the importer from scratch produced the same bare resolution. Reverted: plugin-api
+> stays type-only (`typescript` devDep, no test script), and the shared helper is
+> tested from the plugin package, which owns the vitest setup and already depends
+> on the API package.
+
+> Held-commit path list extended: the pending follow-up commit must now also add
+> `packages/plugin-api/src/append-transcript.ts`,
+> `packages/plugins/transcription-native/src/NativeSpeechPlugin.ts`,
+> `packages/plugins/transcription-native/src/index.test.ts`,
+> `packages/plugins/transcription-native/src/append-transcript.test.ts`, and
+> `apps/web/src/hooks/useTranscription.ts` (the last two are already-covered
+> extensions of previously listed dirs).
+
+### 6. [x] Commit (HELD — stop before running)
 
 Prepared commit (do **not** run; report and wait for user approval):
 
@@ -634,7 +777,12 @@ git add apps/web/src packages/plugin-api/src/index.ts features/PL-4-ui-improveme
 
 **Done when:** stopped and reported, with `git status` output attached.
 
-### 7. [ ] Mark remaining checkboxes
+> Landed after user approval ("annotate the plan and execute"): `465382a`
+> "PL-4: record button, pause/resume, language selector, voice-recorder flow"
+> (22 files, +1902/−118). `.agents/skills/write-plan/SKILL.md` deliberately
+> left uncommitted — it is a workflow edit, not PL-4.
+
+### 7. [x] Mark remaining checkboxes
 
 After the commit lands (orchestrator-approved), mark every remaining `[ ]` in this file
 as `[x]` and confirm in the report that all steps are checked.

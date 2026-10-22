@@ -115,7 +115,7 @@ export function LanguageSelect({
         }
         disabled={disabled}
         onClick={() => (open ? closePopup() : openPopup())}
-        className="flex h-10 w-full cursor-pointer items-center justify-between gap-2 rounded-md border border-border bg-transparent px-3 text-sm transition-colors hover:bg-muted/50 disabled:cursor-not-allowed disabled:opacity-40"
+        className="flex h-10 w-full cursor-pointer items-center justify-between gap-2 rounded-[3px] border border-border bg-transparent px-3 text-sm transition-colors hover:bg-muted/50 disabled:cursor-not-allowed disabled:opacity-40"
       >
         <span className="truncate">{selected ? selected.label : value}</span>
         <ChevronDown

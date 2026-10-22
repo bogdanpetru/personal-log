@@ -47,7 +47,7 @@ export function Playback({ src }: PlaybackProps) {
         type="button"
         aria-label={playing ? "Pause playback" : "Play recording"}
         onClick={handleToggle}
-        className="h-10 cursor-pointer rounded-full border border-border px-4 text-sm transition-colors hover:bg-muted/50"
+        className="h-10 cursor-pointer rounded-[3px] border border-border px-4 text-sm transition-colors hover:bg-muted/50"
       >
         {playing ? "Pause" : "Play"}
       </button>

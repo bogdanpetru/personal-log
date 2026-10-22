@@ -25,8 +25,7 @@ export function RecorderControls({
   onTogglePause,
 }: RecorderControlsProps) {
   // Recording state: the record button is gone entirely — a ticking timer and
-  // the pause/resume pill take its place. The stop button lives at the top
-  // right of the screen, outside this column.
+  // the pause/resume pill take its place below the header.
   if (recording) {
     return (
       <div className="flex flex-col items-center gap-4">
@@ -35,14 +34,16 @@ export function RecorderControls({
       </div>
     );
   }
-  // Initial and readonly states: the red record button is back; below it, the
-  // playback row appears once a recording was kept.
+  // Readonly state: playback only — the record button is no longer visible
+  // (Amendment 2).
+  if (playbackSrc !== null) {
+    return <Playback key={playbackSrc} src={playbackSrc} />;
+  }
+  // Initial state: the red record button, vertically centered in the space
+  // below the header — the only state that ever centers.
   return (
-    <div className="flex flex-col items-center gap-4">
+    <div className="flex min-h-0 flex-1 items-center justify-center">
       <RecordButton supported={supported} onToggle={onToggleRecord} />
-      {playbackSrc !== null && (
-        <Playback key={playbackSrc} src={playbackSrc} />
-      )}
     </div>
   );
 }

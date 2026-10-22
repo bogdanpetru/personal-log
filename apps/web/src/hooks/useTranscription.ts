@@ -1,4 +1,5 @@
 import { useMemo, useRef, useState } from "react";
+import { appendTranscript } from "@personal-log/plugin-api";
 import type { TranscriptionOptions } from "@personal-log/plugin-api";
 import { defaultTranscriptionPlugin } from "@/lib/plugins";
 
@@ -9,6 +10,8 @@ interface UseTranscription {
   start: (options?: TranscriptionOptions) => Promise<void>;
   stop: () => void;
   resume: () => Promise<void>;
+  /** Appends a line break so the next session continues on a fresh line. */
+  newParagraph: () => void;
 }
 
 export function useTranscription(): UseTranscription {
@@ -31,8 +34,12 @@ export function useTranscription(): UseTranscription {
   const beginSession = async () => {
     const session = await defaultTranscriptionPlugin.startLive(optionsRef.current);
     session.onFinalResult((text) => {
-      const base = baseRef.current;
-      setTranscript(base === "" ? text : `${base} ${text}`);
+      // The interim text being committed disappears, so it cannot linger next
+      // to the committed double of itself.
+      setPartial("");
+      // The shared append also trims a tail the engine repeats at the session
+      // boundary, and joins directly after a pause-inserted line break.
+      setTranscript(appendTranscript(baseRef.current, text));
     });
     session.onPartialResult((text) => {
       setPartial(text);
@@ -62,5 +69,12 @@ export function useTranscription(): UseTranscription {
     await beginSession();
   };
 
-  return { transcript, partial, supported, start, stop, resume };
+  // A pause starts a new paragraph: the break lands at the end of the
+  // transcript (only when there is text to break off) and resumed speech
+  // continues below it.
+  const newParagraph = () => {
+    setTranscript((current) => (current === "" ? current : `${current}\n`));
+  };
+
+  return { transcript, partial, supported, start, stop, resume, newParagraph };
 }

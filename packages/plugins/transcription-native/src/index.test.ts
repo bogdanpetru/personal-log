@@ -31,13 +31,19 @@ class FakeSpeechRecognition {
     this.stopped += 1;
   }
 
-  // test helper: emit a recognition event
-  emit(results: { isFinal: boolean; transcript: string }[]) {
+  // test helper: emit a recognition event. The first result lands at
+  // resultIndex (default: the last result, the common Chrome event shape), the
+  // rest follow at consecutive indices, and the list is long enough for the
+  // plugin to read from resultIndex onward — like the engine's result list.
+  emit(
+    results: { isFinal: boolean; transcript: string }[],
+    resultIndex = Math.max(0, results.length - 1),
+  ) {
     const list = {
-      length: results.length,
+      length: resultIndex + results.length,
     } as SpeechRecognitionResultList;
     results.forEach((r, i) => {
-      list[i] = {
+      list[resultIndex + i] = {
         isFinal: r.isFinal,
         length: 1,
         0: { transcript: r.transcript, confidence: 1 },
@@ -46,10 +52,7 @@ class FakeSpeechRecognition {
         // fake result is cast to satisfy the merged interface.
       } as unknown as SpeechRecognitionResult;
     });
-    this.onresult?.({
-      resultIndex: Math.max(0, results.length - 1),
-      results: list,
-    } as SpeechRecognitionEvent);
+    this.onresult?.({ resultIndex, results: list } as SpeechRecognitionEvent);
   }
 }
 // The inline object written as list[i] = { ... 0: {...} } matches the ambient
@@ -129,14 +132,67 @@ describe("native transcription plugin", () => {
     const finals: string[] = [];
     session.onFinalResult((t) => finals.push(t));
     const speech = FakeSpeechRecognition.instances[0];
-    speech.emit([{ isFinal: true, transcript: "one two" }]);
-    speech.emit([{ isFinal: true, transcript: "three" }]);
+    speech.emit([{ isFinal: true, transcript: "one two" }], 0);
+    speech.emit([{ isFinal: true, transcript: "three" }], 1);
 
     expect(finals).toEqual(["one two", "one two three"]);
 
     const result = await session.stop();
     expect(result.text).toBe("one two three");
     expect(speech.stopped).toBe(1);
+  });
+
+  it("replaces a re-finalized result at its index instead of repeating it", async () => {
+    installFakeSpeech();
+    const plugin = new NativeSpeechPlugin();
+    const session = await plugin.startLive();
+    const finals: string[] = [];
+    session.onFinalResult((t) => finals.push(t));
+    const speech = FakeSpeechRecognition.instances[0];
+    speech.emit([{ isFinal: true, transcript: "hello world" }]);
+    speech.emit([{ isFinal: true, transcript: "hello world today" }]);
+
+    expect(finals).toEqual(["hello world", "hello world today"]);
+
+    const result = await session.stop();
+    expect(result.text).toBe("hello world today");
+  });
+
+  it("drops an identical re-finalization of a recorded final", async () => {
+    installFakeSpeech();
+    const plugin = new NativeSpeechPlugin();
+    const session = await plugin.startLive();
+    const finals: string[] = [];
+    session.onFinalResult((t) => finals.push(t));
+    const speech = FakeSpeechRecognition.instances[0];
+    speech.emit([{ isFinal: true, transcript: "hello" }]);
+    speech.emit([{ isFinal: true, transcript: "hello" }]);
+
+    expect(finals).toEqual(["hello"]);
+
+    const result = await session.stop();
+    expect(result.text).toBe("hello");
+  });
+
+  it("does not duplicate the committed tail when the engine restarts and re-delivers it", async () => {
+    installFakeSpeech();
+    const plugin = new NativeSpeechPlugin();
+    const session = await plugin.startLive();
+    const finals: string[] = [];
+    session.onFinalResult((t) => finals.push(t));
+    const speech = FakeSpeechRecognition.instances[0];
+    speech.emit([{ isFinal: true, transcript: "one two" }]);
+    speech.onend?.(); // engine restarts on silence, tail is committed
+    // Fresh run re-delivers the previous tail, then continues with new text.
+    speech.emit([{ isFinal: true, transcript: "one two" }]);
+    speech.emit([{ isFinal: true, transcript: "three" }], 1);
+
+    expect(finals.some((text) => text === "one two one two three")).toBe(false);
+    expect(finals.at(-1)).toBe("one two three");
+
+    const result = await session.stop();
+    expect(result.text).toBe("one two three");
+    expect(finals.at(-1)).toBe("one two three");
   });
 
   it("restarts recognition on end while the session is active, not after stop", async () => {

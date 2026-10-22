@@ -84,3 +84,125 @@ Deferred: highlighting the transcript word at the playback point in time is list
 "if possible" — it needs a timed transcript source (word-level timestamps), which
 the native Web Speech plugin does not provide. Revisit when a transcript source
 with timing exists.
+
+---
+
+# Amendment 2 — header bar; readonly has no record button (2026-10-10)
+
+Refinements to Amendment 1, same session:
+
+- **Header bar** — a full-width bar at the top of the page carries the language
+  selector on the left and, while recording, the stop button on the right. A light
+  bottom border separates the header from the page. The stop button is a normal
+  header item, no longer a fixed overlay. The controls sit **just below the
+  header** — they are no longer vertically centered on the page; the transcript
+  remains below the controls.
+- **[readonly] shows no record button.** After stopping, the page shows only the
+  playback row (play/pause, progress bar, position/duration) and the transcript.
+  Consequence, known and accepted for now: readonly has no in-app way back to
+  recording — a "new recording" affordance (Apple's "Done"-style exit) is a later
+  item; a reload resets the app to the initial state.
+
+---
+
+# Amendment 3 — transcript panel; small button radius (2026-10-10)
+
+- **Page locked to the viewport.** The page itself never scrolls: the header stays
+  at the top, the controls flow directly beneath it, and the transcript takes all
+  remaining space down to the page bottom (~20px content padding) and scrolls
+  internally once the text exceeds it — all content is contained inside the screen.
+- **Transcript styling** — left-aligned, pre-style wrapping (`whitespace-pre-wrap`)
+  so inserted line breaks render as new lines.
+- **Pause inserts a newline.** Clicking pause appends `\n` to the transcript (an
+  empty transcript stays empty), so resume lands on a fresh line — one paragraph
+  break per pause cycle. Session finals rejoined across a break do not get an
+  extra separating space.
+- **Auto-scroll.** While recording, arriving transcript text scrolls the panel to
+  the bottom.
+- **Normal buttons use a small ~3px radius** (`rounded-[3px]`): pause/resume,
+  stop, playback play/pause, and the language-select trigger are no longer full
+  pills. The record button remains a circle.
+
+---
+
+# Amendment 4 — language selector design; initial-state centering (2026-10-10)
+
+- **Searchable selector.** The language selector is a combobox, not a plain
+  `<select>`: a trigger button opening a popup with a search field and a listbox.
+  Search is diacritic-insensitive and matches the native name, the short English
+  name, and the BCP-47 code. Keyboard: arrows navigate, Enter commits, Escape/Tab
+  close; the check mark marks the selection.
+- **Names come from the browser, not hardcoding.** There is no browser API that
+  enumerates languages (`Intl.supportedValuesOf` covers calendars/currencies/time
+  zones only), so the *code list* stays curated — but every displayed name is
+  generated with `Intl.DisplayNames`: the native label renders the primary subtag
+  in its own locale (sentence-cased: "Deutsch", "Français", "Русский"), and the
+  short English name feeds the search text.
+- **Short names, one entry per language.** Region qualifiers are dropped —
+  "German (Germany)" reads as duplicating the main name ("keep the first part,
+  drop the secondary") — and variant codes that exist only to rename entries
+  (`en-GB`, `pt-PT`, `zh-TW`) are not listed. One entry per primary language
+  (~63 languages); the kept code keeps its region for the recognition engine
+  (`en-US`, `pt-BR`, `zh-CN`).
+- **Selection behavior** (from the original scope, still true): defaults to
+  `navigator.language` with the `en-US` fallback, disabled while recording, and a
+  new recording uses the language selected before it started.
+- **Initial state centers the record button** vertically in the space below the
+  header — and **only** that state centers. Recording and readonly are always
+  top-aligned: the controls sit right below the header and the transcript flows
+  beneath them, even while no transcript text exists yet (a silent recording is
+  never centered). Playback is never vertically centered either.
+
+## Conventions (accumulated during review)
+
+- **Dark-only theme:** the app has no light mode; the Gruvbox dark palette is
+  saved as tokens in `src/index.css` (full palette documented in its header
+  comment).
+- **Flat controls:** no drop shadows or rings (a no-blur ring was tried and
+  removed on request).
+- **Pointer cursor** on interactive controls; disabled ones keep not-allowed.
+- **Hover feedback is a real color shift**, never opacity-only — e.g. the record
+  button darkens `bg-record` → `bg-record-hover`, ordinary buttons use
+  `hover:bg-muted/50`.
+- **Normal buttons ~3px radius** (Amendment 3); the record button is a circle.
+
+---
+
+# Amendment 5 — transcript deduplication (2026-10-10)
+
+**Problem.** Transcript text sometimes appeared duplicated, "especially when
+stopping talking". Three mechanisms found: the recognition engine refines a result
+on silence and re-finalizes it (the old code appended every final unconditionally);
+the engine ends recognition on a pause in speech and restarts the same recognizer,
+which re-delivers the last finalized segment; and the ephemeral in-progress text
+lingered on screen next to the committed double of itself once its content became
+final.
+
+**Rule (the user's algorithm).** When newly recognized text begins with what
+already ends the committed text, the overlap is trimmed instead of appended.
+A full repeat of (a tail of) the committed text is always treated as re-delivery;
+a partial overlap only trims once it is long enough that speech could not
+legitimately be repeating a short phrase (default threshold 12 characters —
+"the cat" → "the cat sat" stays a genuine repeat). Callers that know a
+recognition restart just happened trim any overlap (threshold 1). A base ending
+in a paragraph break (`\n`, from pause) joins directly, without a separating space.
+The rule lives in one shared function (`appendTranscript` in `@personal-log/plugin-api`)
+so the engine and the app apply the same semantics.
+
+**Where it applies.**
+
+- **Engine (native Web Speech plugin):** finalized results accumulate per result
+  index — a longer restatement of the same index replaces the recorded segment
+  (refinement), an identical or shorter one is dropped (re-delivery). When the
+  recognizer restarts, the current run's segments fold into the committed session
+  text through the shared rule (aggressive), and a totally unchanged session total
+  is not re-emitted. `stop()` folds the same way.
+- **App (`useTranscription`):** when a final arrives, the ephemeral partial is
+  cleared at the same instant it is committed (it can never linger next to its
+  double), and the new session text joins the pre-session transcript through the
+  shared rule — also covering the pause/resume seam and any wholesale re-emission.
+
+**Accepted trade-off.** Aggressive trimming at restart boundaries can drop a
+legitimately repeated short phrase that immediately restates the committed tail;
+the ≥12-character default protects the common app-level path, so only
+engine-restart seams carry that risk.

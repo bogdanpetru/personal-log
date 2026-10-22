@@ -26,6 +26,7 @@ export default function App() {
     start: startTranscription,
     stop: stopTranscription,
     resume: resumeTranscription,
+    newParagraph,
   } = useTranscription();
   const [language, setLanguage] = useState(defaultLanguage());
 
@@ -59,6 +60,8 @@ export default function App() {
     } else {
       pauseRecording();
       stopTranscription();
+      // Pausing starts a new paragraph: resumed speech lands on a fresh line.
+      newParagraph();
     }
   };
 
@@ -71,12 +74,18 @@ export default function App() {
   }, [recordingSrc, transcript, discardRecording]);
 
   return (
-    <AppShell>
-      <LanguageSelect
-        disabled={recording}
-        value={language}
-        onChange={setLanguage}
-      />
+    <AppShell
+      header={
+        <>
+          <LanguageSelect
+            disabled={recording}
+            value={language}
+            onChange={setLanguage}
+          />
+          {recording && <StopButton onStop={handleStop} />}
+        </>
+      }
+    >
       <RecorderControls
         recording={recording}
         paused={paused}
@@ -86,8 +95,7 @@ export default function App() {
         onToggleRecord={() => void start()}
         onTogglePause={handleTogglePause}
       />
-      {recording && <StopButton onStop={handleStop} />}
-      <Transcript transcript={transcript} partial={partial} />
+      <Transcript autoScroll={recording} transcript={transcript} partial={partial} />
     </AppShell>
   );
 }
