@@ -4,74 +4,43 @@ import { LanguageSelect } from "@/components/LanguageSelect";
 import { RecorderControls } from "@/components/RecorderControls";
 import { StopButton } from "@/components/StopButton";
 import { Transcript } from "@/components/Transcript";
-import { useRecorder } from "@/hooks/useRecorder";
-import { useTranscription } from "@/hooks/useTranscription";
+import { usePersonalLog } from "@/hooks/usePersonalLog";
 import { defaultLanguage } from "@/lib/languages";
 
 export default function App() {
-  const {
-    recording: recordingSrc,
-    seconds,
-    status,
-    start: startRecording,
-    stop: stopRecording,
-    discardRecording,
-    pause: pauseRecording,
-    resume: resumeRecording,
-  } = useRecorder();
-  const {
-    transcript,
-    partial,
-    supported,
-    start: startTranscription,
-    stop: stopTranscription,
-    resume: resumeTranscription,
-    newParagraph,
-  } = useTranscription();
+  const { core, state, supported, playbackSrc } = usePersonalLog();
   const [language, setLanguage] = useState(defaultLanguage());
 
-  const recording = status !== "idle";
-  const paused = status === "paused";
+  // The language takes effect on the next recording (PL-4): the selector is
+  // disabled while recording, so this only ever changes between sessions.
+  useEffect(() => {
+    core.setLanguage(language);
+  }, [core, language]);
 
-  const start = async () => {
-    await startRecording();
-    try {
-      await startTranscription({ language });
-    } catch (error) {
-      stopRecording();
-      throw error;
-    }
+  const recording = state.status !== "idle";
+  const paused = state.status === "paused";
+
+  // Recording needs its transcription: a start failure (recorder or
+  // recognizer) leaves the core idle and is surfaced by it; nothing to do here.
+  const start = () => {
+    void core.record().catch(() => undefined);
   };
 
-  // Stop ends everything at once — recorder and transcription — and leaves the
-  // readonly state behind (playback of what was captured).
+  // Stop ends everything at once — recorder and transcription — and leaves
+  // the completed log behind (playback of what was captured).
   const handleStop = () => {
-    stopTranscription();
-    stopRecording();
+    void core.stop();
   };
 
   const handleTogglePause = () => {
     if (paused) {
       // Resume transcription first; if it fails, the recorder stays paused and
       // the user can retry or press stop.
-      void resumeTranscription()
-        .then(() => resumeRecording())
-        .catch(() => undefined);
+      void core.resume();
     } else {
-      pauseRecording();
-      stopTranscription();
-      // Pausing starts a new paragraph: resumed speech lands on a fresh line.
-      newParagraph();
+      core.pause();
     }
   };
-
-  // An empty transcript means nothing was actually recorded: treat the
-  // recording as failed, keep nothing, and stay in the initial state.
-  useEffect(() => {
-    if (recordingSrc !== null && transcript === "") {
-      discardRecording();
-    }
-  }, [recordingSrc, transcript, discardRecording]);
 
   return (
     <AppShell
@@ -90,12 +59,16 @@ export default function App() {
         recording={recording}
         paused={paused}
         supported={supported}
-        timerSeconds={seconds}
-        playbackSrc={recordingSrc}
-        onToggleRecord={() => void start()}
+        timerSeconds={state.seconds}
+        playbackSrc={playbackSrc}
+        onToggleRecord={start}
         onTogglePause={handleTogglePause}
       />
-      <Transcript autoScroll={recording} transcript={transcript} partial={partial} />
+      <Transcript
+        autoScroll={recording}
+        transcript={state.transcript}
+        partial={state.partial}
+      />
     </AppShell>
   );
 }

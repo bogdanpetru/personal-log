@@ -1,0 +1,1 @@
+export { IndexedDBStoragePlugin } from "./IndexedDBStoragePlugin.js";
