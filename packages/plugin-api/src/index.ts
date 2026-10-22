@@ -7,4 +7,8 @@ export type { Recorder } from "./Recorder.js";
 export type { AudioArtifact } from "./AudioArtifact.js";
 export type { TranscriptionArtifact } from "./TranscriptionArtifact.js";
 export type { LogId, Log } from "./Log.js";
+export type { LogData } from "./LogData.js";
+export type { LogFilter } from "./LogFilter.js";
+export type { LogQueryInclude } from "./LogQueryInclude.js";
+export type { LogQuery } from "./LogQuery.js";
 export type { StoragePlugin } from "./StoragePlugin.js";

@@ -1,5 +1,5 @@
 {
-  "name": "@personal-log/plugin-storage-indexeddb",
+  "name": "@personal-log/plugin-storage-opfs",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -14,7 +14,6 @@
     "@personal-log/plugin-api": "workspace:*"
   },
   "devDependencies": {
-    "fake-indexeddb": "^6.2.2",
     "typescript": "~6.0.2",
     "vite": "^8.3.2",
     "vitest": "^5.0.3"

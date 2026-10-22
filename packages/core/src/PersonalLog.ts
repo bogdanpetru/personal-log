@@ -2,7 +2,9 @@ import { appendTranscript } from "@personal-log/plugin-api";
 import type {
   LiveTranscriptionPlugin,
   Log,
+  LogData,
   LogId,
+  LogQuery,
   Recorder,
   Recording,
   StoragePlugin,
@@ -292,9 +294,16 @@ export class PersonalLog {
       return;
     }
 
-    const log = this.buildLog(recording, durationMs, transcript, language);
-    await this.storage?.save(log);
-    this.emit("recorded", log);
+    const { log, data } = this.buildLog(recording, durationMs, transcript, language);
+    try {
+      await this.storage?.save(log, data);
+    } catch (error) {
+      // A persistence failure (quota, permissions) must not swallow the
+      // recording: the log is still delivered to the caller, and the
+      // failure is reported through the "error" event.
+      this.emit("error", error);
+    }
+    this.emit("recorded", log, data);
   }
 
   // ---- Configuration & queries ----
@@ -308,11 +317,19 @@ export class PersonalLog {
     return this.transcriber?.capabilities().live ?? false;
   }
 
-  getRecordings(): Promise<Log[]> {
-    return this.storage?.list() ?? Promise.resolve([]);
+  getLogs(query?: LogQuery): Promise<Log[]> {
+    return this.storage?.getLogs(query) ?? Promise.resolve([]);
   }
 
-  async deleteRecording(logId: LogId): Promise<void> {
+  getLog(logId: LogId): Promise<Log | undefined> {
+    return this.storage?.get(logId) ?? Promise.resolve(undefined);
+  }
+
+  getLogData(logId: LogId): Promise<LogData | undefined> {
+    return this.storage?.getLogData(logId) ?? Promise.resolve(undefined);
+  }
+
+  async deleteLog(logId: LogId): Promise<void> {
     if (this.storage === undefined) {
       return;
     }
@@ -333,10 +350,10 @@ export class PersonalLog {
     durationMs: number,
     transcript: string,
     language: string | undefined,
-  ): Log {
+  ): { log: Log; data: LogData } {
     const logId = crypto.randomUUID();
     const createdAt = new Date().toISOString();
-    return {
+    const log: Log = {
       id: logId,
       createdAt,
       durationMs,
@@ -345,7 +362,6 @@ export class PersonalLog {
         mimeType: recording.blob.type,
         size: recording.blob.size,
         createdAt,
-        blob: recording.blob,
       },
       transcriptions:
         this.transcriber === undefined
@@ -361,5 +377,8 @@ export class PersonalLog {
               },
             ],
     };
+    // The audio travels beside the metadata — to storage and to the UI.
+    const data: LogData = { logId, audio: recording.blob };
+    return { log, data };
   }
 }

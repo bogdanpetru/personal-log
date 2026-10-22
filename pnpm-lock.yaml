@@ -22,9 +22,9 @@ importers:
       '@personal-log/plugin-recorder-media':
         specifier: workspace:*
         version: link:../../packages/plugins/recorder-media
-      '@personal-log/plugin-storage-indexeddb':
+      '@personal-log/plugin-storage-opfs':
         specifier: workspace:*
-        version: link:../../packages/plugins/storage-indexeddb
+        version: link:../../packages/plugins/storage-opfs
       '@personal-log/plugin-transcription-native':
         specifier: workspace:*
         version: link:../../packages/plugins/transcription-native
@@ -143,15 +143,12 @@ importers:
         specifier: ^5.0.3
         version: 5.0.3(@types/node@24.19.1)(jsdom@30.1.2)(vite@8.3.3(@types/node@24.19.1)(jiti@2.7.0)(terser@5.51.2))
 
-  packages/plugins/storage-indexeddb:
+  packages/plugins/storage-opfs:
     dependencies:
       '@personal-log/plugin-api':
         specifier: workspace:*
         version: link:../../plugin-api
     devDependencies:
-      fake-indexeddb:
-        specifier: ^6.2.2
-        version: 6.2.6
       typescript:
         specifier: ~6.0.2
         version: 6.0.3
@@ -2665,10 +2662,6 @@ packages:
   express@5.2.1:
     resolution: {integrity: sha512-hIS4idWWai69NezIdRt2xFVofaF4j+6INOpJlVOLDO8zXGpUVEVzIYk12UUi2JzjEzWL3IOAxcTubgz9Po0yXw==}
     engines: {node: '>= 18'}
-
-  fake-indexeddb@6.2.6:
-    resolution: {integrity: sha512-ihhmr0KoET51jT8R4YhbUYuLLvr1qqO6INISygtN16i8loR8kAxtAUr4+EKHTSMjL+lggaAn4OC7DRqzrNgnuQ==}
-    engines: {node: '>=18'}
 
   fast-deep-equal@3.1.3:
     resolution: {integrity: sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==}
@@ -6962,8 +6955,6 @@ snapshots:
       vary: 1.1.2
     transitivePeerDependencies:
       - supports-color
-
-  fake-indexeddb@6.2.6: {}
 
   fast-deep-equal@3.1.3: {}
 

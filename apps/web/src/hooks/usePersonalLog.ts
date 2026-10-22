@@ -1,9 +1,8 @@
 import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import { PersonalLog } from "@personal-log/core";
 import type { PersonalLogState } from "@personal-log/core";
-import type { Log } from "@personal-log/plugin-api";
 import { MediaRecorderRecorder } from "@personal-log/plugin-recorder-media";
-import { IndexedDBStoragePlugin } from "@personal-log/plugin-storage-indexeddb";
+import { OpfsStoragePlugin } from "@personal-log/plugin-storage-opfs";
 import { NativeSpeechPlugin } from "@personal-log/plugin-transcription-native";
 
 interface UsePersonalLog {
@@ -29,7 +28,7 @@ export function usePersonalLog(): UsePersonalLog {
       new PersonalLog({
         recorder: new MediaRecorderRecorder(),
         transcriber: new NativeSpeechPlugin(),
-        storage: new IndexedDBStoragePlugin(),
+        storage: new OpfsStoragePlugin(),
       }),
   );
 
@@ -58,7 +57,7 @@ export function usePersonalLog(): UsePersonalLog {
       url = null;
       setPlaybackSrc(null);
     };
-    const offRecorded = core.on("recorded", (log: Log) => show(log.audio.blob));
+    const offRecorded = core.on("recorded", (_log, data) => show(data.audio));
     const offDiscarded = core.on("discarded", hide);
     const offState = core.on("state", (next) => {
       if (next.status === "recording") {

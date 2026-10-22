@@ -1,0 +1,1 @@
+export { OpfsStoragePlugin } from "./OpfsStoragePlugin.js";

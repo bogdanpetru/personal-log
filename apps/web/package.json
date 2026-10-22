@@ -15,7 +15,7 @@
     "@personal-log/core": "workspace:*",
     "@personal-log/plugin-api": "workspace:*",
     "@personal-log/plugin-recorder-media": "workspace:*",
-    "@personal-log/plugin-storage-indexeddb": "workspace:*",
+    "@personal-log/plugin-storage-opfs": "workspace:*",
     "@personal-log/plugin-transcription-native": "workspace:*",
     "@fontsource-variable/geist": "^5.3.0",
     "@tailwindcss/vite": "^4.3.3",

@@ -2,7 +2,9 @@ import { afterEach, expect, test, vi } from "vitest";
 import type {
   LiveTranscriptionPlugin,
   Log,
+  LogData,
   LogId,
+  LogQuery,
   Recorder,
   StoragePlugin,
   TranscriptionOptions,
@@ -84,29 +86,45 @@ class FakeStorage implements StoragePlugin {
   readonly id = "fake-storage";
   readonly name = "Fake storage";
   readonly logs = new Map<LogId, Log>();
+  readonly data = new Map<LogId, LogData>();
+  readonly saveCalls: Array<{ log: Log; data: LogData }> = [];
+  failSave = false;
 
   async initialize(): Promise<void> {}
 
-  async save(log: Log): Promise<void> {
-    this.logs.set(log.id, log);
+  async getLogs(query: LogQuery = {}): Promise<Log[]> {
+    const { skip = 0, limit = 50 } = query;
+    const all = [...this.logs.values()].sort((a, b) =>
+      a.createdAt.localeCompare(b.createdAt),
+    );
+    return all.slice(skip, skip + limit);
   }
 
   async get(logId: LogId): Promise<Log | undefined> {
     return this.logs.get(logId);
   }
 
-  async list(): Promise<Log[]> {
-    return [...this.logs.values()].sort((a, b) =>
-      a.createdAt.localeCompare(b.createdAt),
-    );
+  async getLogData(logId: LogId): Promise<LogData | undefined> {
+    return this.data.get(logId);
+  }
+
+  async save(log: Log, data: LogData): Promise<void> {
+    if (this.failSave) {
+      throw new Error("quota exceeded");
+    }
+    this.logs.set(log.id, log);
+    this.data.set(log.id, data);
+    this.saveCalls.push({ log, data });
   }
 
   async delete(logId: LogId): Promise<void> {
     this.logs.delete(logId);
+    this.data.delete(logId);
   }
 
   async dispose(): Promise<void> {
     this.logs.clear();
+    this.data.clear();
   }
 }
 
@@ -239,7 +257,7 @@ test("the timer ticks while recording and freezes while paused", async () => {
 });
 
 test("stop saves the log, emits recorded, and resets the state", async () => {
-  const { core, recorder, transcriber } = setup();
+  const { core, recorder, transcriber, storage } = setup();
   core.setLanguage("de-DE");
   await core.record();
   transcriber.onFinal!("hello");
@@ -248,7 +266,7 @@ test("stop saves the log, emits recorded, and resets the state", async () => {
   await core.stop();
   expect(recorder.stopped).toBe(1);
   expect(onRecorded).toHaveBeenCalledTimes(1);
-  const log = onRecorded.mock.calls[0]![0];
+  const [log, data] = onRecorded.mock.calls[0]!;
   expect(log.transcriptions).toEqual([
     expect.objectContaining({
       providerId: "fake",
@@ -256,8 +274,14 @@ test("stop saves the log, emits recorded, and resets the state", async () => {
       text: "hello",
     }),
   ]);
+  // Metadata carries no blob; the audio travels in the data pair.
   expect(log.audio.mimeType).toBe("audio/webm");
-  expect(await core.getRecordings()).toEqual([log]);
+  expect(log.audio).not.toHaveProperty("blob");
+  expect(data.logId).toBe(log.id);
+  expect(data.audio).toBeInstanceOf(Blob);
+  expect(storage!.saveCalls).toEqual([{ log, data }]);
+  expect(await core.getLogs()).toEqual([log]);
+  expect(await core.getLogData(log.id)).toEqual(data);
   expect(core.getState()).toEqual({
     status: "idle",
     seconds: 0,
@@ -276,7 +300,7 @@ test("stopping with an empty transcript discards the log and saves nothing", asy
   await core.stop();
   expect(onRecorded).not.toHaveBeenCalled();
   expect(onDiscarded).toHaveBeenCalledTimes(1);
-  expect(await core.getRecordings()).toEqual([]);
+  expect(await core.getLogs()).toEqual([]);
   expect(core.getState().status).toBe("idle");
 });
 
@@ -298,14 +322,14 @@ test("commands are guarded no-ops out of turn", async () => {
   await core.stop();
 });
 
-test("deleteRecording removes the log from storage", async () => {
+test("deleteLog removes the log from storage", async () => {
   const { core, transcriber } = setup();
   await core.record();
   transcriber.onFinal!("hello");
   await core.stop();
-  const [log] = await core.getRecordings();
-  await core.deleteRecording(log!.id);
-  expect(await core.getRecordings()).toEqual([]);
+  const [log] = await core.getLogs();
+  await core.deleteLog(log!.id);
+  expect(await core.getLogs()).toEqual([]);
 });
 
 test("without storage the log is still delivered but persisted nowhere", async () => {
@@ -316,9 +340,24 @@ test("without storage the log is still delivered but persisted nowhere", async (
   core.on("recorded", onRecorded);
   await core.stop();
   expect(onRecorded).toHaveBeenCalledTimes(1);
-  expect(await core.getRecordings()).toEqual([]);
+  expect(await core.getLogs()).toEqual([]);
   // Deleting is a no-op, not a failure.
-  await core.deleteRecording("whatever");
+  await core.deleteLog("whatever");
+});
+
+test("a failing storage reports the error but still delivers the recording", async () => {
+  const { core, transcriber, storage } = setup();
+  storage!.failSave = true;
+  const onRecorded = vi.fn();
+  const onError = vi.fn();
+  core.on("recorded", onRecorded);
+  core.on("error", onError);
+  await core.record();
+  transcriber.onFinal!("hello");
+  await core.stop();
+  expect(onError).toHaveBeenCalledTimes(1);
+  expect(onRecorded).toHaveBeenCalledTimes(1);
+  expect(await core.getLogs()).toEqual([]);
 });
 
 test("state events fire and unsubscribing stops them", async () => {
