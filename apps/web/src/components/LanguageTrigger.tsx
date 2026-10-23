@@ -33,7 +33,7 @@ export function LanguageTrigger({
       className="flex h-10 w-full cursor-pointer items-center justify-between gap-2 rounded-[3px] border border-border bg-transparent px-3 text-foreground font-normal transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-40"
       {...props}
     >
-      <Text as="span" size="sm" className="truncate">
+      <Text as="span" size="sm" className="truncate text-foreground">
         {label}
       </Text>
       <ChevronDown

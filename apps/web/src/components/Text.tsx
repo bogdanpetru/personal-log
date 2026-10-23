@@ -2,10 +2,11 @@ import type { ElementType, HTMLAttributes } from "react";
 import { cn } from "cn";
 
 const sizes = {
-  xs: "text-xs",
-  sm: "text-sm",
-  base: "text-base",
-  display: "text-3xl",
+  xs: "text-sm font-light",
+  sm: "text-base font-light",
+  base: "text-lg font-light",
+  title: "text-2xl font-bold",
+  display: "text-5xl font-light",
 } as const;
 
 interface TextProps extends HTMLAttributes<HTMLElement> {

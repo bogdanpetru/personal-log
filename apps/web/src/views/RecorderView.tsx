@@ -3,6 +3,7 @@ import { AppShell } from "@/components/AppShell";
 import { LanguageSelect } from "@/components/LanguageSelect";
 import { PauseResumeButton } from "@/components/PauseResumeButton";
 import { RecordButton } from "@/components/RecordButton";
+import { RecordingTitle } from "@/components/RecordingTitle";
 import { StopButton } from "@/components/StopButton";
 import { Timer } from "@/components/Timer";
 import { Transcript } from "@/components/Transcript";
@@ -13,6 +14,7 @@ import { defaultLanguage } from "@/lib/languages";
 export function RecorderView() {
   const { core, state, supported, playbackSrc } = usePersonalLog();
   const [language, setLanguage] = useState(defaultLanguage());
+  const [title, setTitle] = useState("");
 
   useEffect(() => {
     core.setLanguage(language);
@@ -22,6 +24,16 @@ export function RecorderView() {
   const paused = state.status === "paused";
 
   const start = () => {
+    setTitle(
+      new Date().toLocaleString("sv", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      })
+    );
     void core.record().catch(() => undefined);
   };
 
@@ -52,6 +64,7 @@ export function RecorderView() {
     >
       {recording ? (
         <div className="flex flex-col items-center gap-4">
+          <RecordingTitle title={title} onCommit={setTitle} />
           <Timer seconds={state.seconds} />
           <PauseResumeButton paused={paused} onToggle={handleTogglePause} />
         </div>

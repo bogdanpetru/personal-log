@@ -30,9 +30,9 @@ export function Transcript({
   return (
     <div
       ref={panelRef}
-      className="min-h-0 w-full max-w-prose flex-1 overflow-y-auto text-left"
+      className="min-h-0 w-full flex-1 overflow-y-auto text-left"
     >
-      <Text className="whitespace-pre-wrap">
+      <Text className="whitespace-pre-wrap text-white">
         {transcript}
         {partial !== "" && (
           <Text as="span" muted>
