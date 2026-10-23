@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { CirclePause, CirclePlay } from "lucide-react";
 import { Audio } from "@/components/Audio";
 import { Button } from "@/components/Button";
 import { Text } from "@/components/Text";
@@ -39,14 +40,18 @@ export function PlaybackView({ src }: PlaybackViewProps) {
   };
 
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-s2">
       <Button
         type="button"
         aria-label={playing ? "Pause playback" : "Play recording"}
         onClick={handleToggle}
-        className="h-10 cursor-pointer rounded-[3px] border border-border bg-transparent px-4 text-foreground font-normal transition-colors hover:bg-muted"
+        className="h-s4 cursor-pointer rounded-full border border-border bg-transparent px-s3 text-foreground transition-colors hover:bg-muted"
       >
-        {playing ? "Pause" : "Play"}
+        {playing ? (
+          <CirclePause aria-hidden className="size-s3" />
+        ) : (
+          <CirclePlay aria-hidden className="size-s3" />
+        )}
       </Button>
       <PlaybackProgressBar max={duration} current={currentTime} />
       <Text as="span" size="xs" muted className="tabular-nums">

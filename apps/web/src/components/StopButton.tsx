@@ -1,3 +1,4 @@
+import { Square } from "lucide-react";
 import { Button } from "@/components/Button";
 
 interface StopButtonProps {
@@ -10,9 +11,9 @@ export function StopButton({ onStop }: StopButtonProps) {
       type="button"
       aria-label="Stop recording"
       onClick={onStop}
-      className="h-10 cursor-pointer rounded-[3px] border border-border bg-transparent px-4 text-foreground font-normal transition-colors hover:bg-muted"
+      className="h-s4 cursor-pointer rounded-full border border-transparent bg-record px-s3 text-white transition-colors hover:bg-record-hover"
     >
-      Stop
+      <Square aria-hidden />
     </Button>
   );
 }

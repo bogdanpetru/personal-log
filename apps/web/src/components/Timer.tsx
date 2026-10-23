@@ -12,7 +12,7 @@ function format(seconds: number): string {
 
 export function Timer({ seconds }: TimerProps) {
   return (
-    <Text role="timer" size="display" className="tabular-nums">
+    <Text role="timer" size="display" className="tabular-nums text-white">
       {format(seconds)}
     </Text>
   );

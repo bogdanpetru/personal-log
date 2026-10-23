@@ -27,7 +27,7 @@ export function LanguageOptionRow({
       role="option"
       aria-selected={selected}
       tabIndex={-1}
-      className={`cursor-pointer flex items-center justify-between gap-2 rounded-sm px-2 py-1.5 ${active ? "bg-muted" : ""}`}
+      className={`cursor-pointer flex items-center justify-between gap-s2 rounded-sm px-s1 py-s1 ${active ? "bg-muted" : ""}`}
       onMouseDown={(event) => event.preventDefault()}
       onClick={onSelect}
       onMouseMove={onHighlight}

@@ -48,15 +48,25 @@
     --radius-2xl: calc(var(--radius) * 1.8);
     --radius-3xl: calc(var(--radius) * 2.2);
     --radius-4xl: calc(var(--radius) * 2.6);
+    --text-caption: var(--type-caption);
+    --text-caption--line-height: 1.5;
+    --text-body: var(--type-body);
+    --text-body--line-height: 1.618;
+    --text-lead: var(--type-lead);
+    --text-lead--line-height: 1.5;
+    --text-heading: var(--type-heading);
+    --text-heading--line-height: 1.25;
+    --text-display: var(--type-display);
+    --text-display--line-height: 1.2;
+    --spacing-s1: 0.5rem;
+    --spacing-s2: 0.8125rem;
+    --spacing-s3: 1.3125rem;
+    --spacing-s4: 2.125rem;
+    --spacing-s5: 3.4375rem;
+    --spacing-s6: 9rem;
+    --container-panel: 40rem;
 }
 
-/*
- * Gruvbox palette (dark):
- * bg0-h #1d2021 · bg0 #282828 · bg1 #3c3836 · bg2 #504945 · fg #fbf1c7 · gray1 #a89984 ·
- * red #cc241d/#fb4934 · green #98971a/#b8bb26 · yellow #d79921/#fabd2f ·
- * blue #458588/#83a598 · purple #b16286/#d3869b · aqua #689d6a/#8ec07c ·
- * orange #d65d0e/#fe8019
- */
 :root {
     --background: #000000;
     --foreground: #ffaa33;
@@ -92,6 +102,11 @@
     --sidebar-accent-foreground: #ffffff;
     --sidebar-border: #4ea8de;
     --sidebar-ring: #5bbcff;
+    --type-caption: 0.8125rem;
+    --type-body: 1rem;
+    --type-lead: 1.625rem;
+    --type-heading: 2.625rem;
+    --type-display: 4.25rem;
 }
 
 @layer base {

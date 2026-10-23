@@ -1,18 +1,20 @@
 import { useEffect, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { LanguageSelect } from "@/components/LanguageSelect";
+import { LanguageTag } from "@/components/LanguageTag";
 import { PauseResumeButton } from "@/components/PauseResumeButton";
 import { RecordButton } from "@/components/RecordButton";
+import { RecordingIndicator } from "@/components/RecordingIndicator";
 import { RecordingTitle } from "@/components/RecordingTitle";
 import { StopButton } from "@/components/StopButton";
 import { Timer } from "@/components/Timer";
 import { Transcript } from "@/components/Transcript";
 import { usePersonalLog } from "@/hooks/usePersonalLog";
 import { PlaybackView } from "@/views/PlaybackView";
-import { defaultLanguage } from "@/lib/languages";
+import { LANGUAGES, defaultLanguage } from "@/lib/languages";
 
 export function RecorderView() {
-  const { core, state, supported, playbackSrc } = usePersonalLog();
+  const { core, state, supported, playbackSrc, finishedLog } = usePersonalLog();
   const [language, setLanguage] = useState(defaultLanguage());
   const [title, setTitle] = useState("");
 
@@ -49,36 +51,53 @@ export function RecorderView() {
     }
   };
 
+  const playingBack = playbackSrc !== null;
+  const viewLanguage =
+    finishedLog?.transcriptions[0]?.language ?? language;
+  const viewLanguageLabel =
+    LANGUAGES.find((option) => option.code === viewLanguage)?.label ??
+    viewLanguage;
+  const transcript = recording
+    ? state.transcript
+    : playingBack
+      ? (finishedLog?.transcriptions[0]?.text ?? "")
+      : "";
+
   return (
-    <AppShell
-      header={
+    <AppShell>
+      {recording ? (
+        <div className="flex w-full flex-col items-center gap-s3">
+          <div className="flex items-center gap-s2">
+            <RecordingIndicator />
+            <Timer seconds={state.seconds} />
+          </div>
+          <div className="flex items-center gap-s2">
+            <PauseResumeButton paused={paused} onToggle={handleTogglePause} />
+            <StopButton onStop={handleStop} />
+          </div>
+          <RecordingTitle title={title} onCommit={setTitle} />
+          <LanguageTag label={viewLanguageLabel} />
+        </div>
+      ) : playingBack ? (
         <>
+          <PlaybackView key={playbackSrc} src={playbackSrc} />
+          <RecordingTitle title={title} onCommit={setTitle} />
+          <LanguageTag label={viewLanguageLabel} />
+        </>
+      ) : (
+        <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-s4">
+          <RecordButton supported={supported} onToggle={start} />
           <LanguageSelect
             disabled={recording}
             value={language}
             onChange={setLanguage}
           />
-          {recording && <StopButton onStop={handleStop} />}
-        </>
-      }
-    >
-      {recording ? (
-        <div className="flex flex-col items-center gap-4">
-          <RecordingTitle title={title} onCommit={setTitle} />
-          <Timer seconds={state.seconds} />
-          <PauseResumeButton paused={paused} onToggle={handleTogglePause} />
-        </div>
-      ) : playbackSrc !== null ? (
-        <PlaybackView key={playbackSrc} src={playbackSrc} />
-      ) : (
-        <div className="flex min-h-0 flex-1 items-center justify-center">
-          <RecordButton supported={supported} onToggle={start} />
         </div>
       )}
       <Transcript
         autoScroll={recording}
-        transcript={state.transcript}
-        partial={state.partial}
+        transcript={transcript}
+        partial={recording ? state.partial : ""}
       />
     </AppShell>
   );

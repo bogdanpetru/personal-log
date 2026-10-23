@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import { PersonalLog } from "@personal-log/core";
 import type { PersonalLogState } from "@personal-log/core";
+import type { Log } from "@personal-log/plugin-api";
 import { MediaRecorderRecorder } from "@personal-log/plugin-recorder-media";
 import { OpfsStoragePlugin } from "@personal-log/plugin-storage-opfs";
 import { NativeSpeechPlugin } from "@personal-log/plugin-transcription-native";
@@ -10,6 +11,7 @@ interface UsePersonalLog {
   state: PersonalLogState;
   supported: boolean;
   playbackSrc: string | null;
+  finishedLog: Log | null;
 }
 
 export function usePersonalLog(): UsePersonalLog {
@@ -30,6 +32,7 @@ export function usePersonalLog(): UsePersonalLog {
   const state = useSyncExternalStore(subscribe, getSnapshot);
 
   const [playbackSrc, setPlaybackSrc] = useState<string | null>(null);
+  const [finishedLog, setFinishedLog] = useState<Log | null>(null);
 
   useEffect(() => {
     let url: string | null = null;
@@ -44,10 +47,17 @@ export function usePersonalLog(): UsePersonalLog {
       url = null;
       setPlaybackSrc(null);
     };
-    const offRecorded = core.on("recorded", (_log, data) => show(data.audio));
-    const offDiscarded = core.on("discarded", hide);
+    const offRecorded = core.on("recorded", (log, data) => {
+      setFinishedLog(log);
+      show(data.audio);
+    });
+    const offDiscarded = core.on("discarded", () => {
+      setFinishedLog(null);
+      hide();
+    });
     const offState = core.on("state", (next) => {
       if (next.status === "recording") {
+        setFinishedLog(null);
         hide();
       }
     });
@@ -66,5 +76,6 @@ export function usePersonalLog(): UsePersonalLog {
     state,
     supported: core.isTranscriptionSupported(),
     playbackSrc,
+    finishedLog,
   };
 }
