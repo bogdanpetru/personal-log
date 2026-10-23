@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState } from "react";
+import { Audio } from "@/components/Audio";
+import { Button } from "@/components/Button";
+import { Text } from "@/components/Text";
+import { PlaybackProgressBar } from "@/components/PlaybackProgressBar";
 
-interface PlaybackProps {
-  /** Object URL of the recorded audio. */
+interface PlaybackViewProps {
   src: string;
 }
 
@@ -12,15 +15,12 @@ function formatSeconds(total: number): string {
   return `${minutes}:${String(rest).padStart(2, "0")}`;
 }
 
-export function Playback({ src }: PlaybackProps) {
+export function PlaybackView({ src }: PlaybackViewProps) {
   const [playing, setPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  // Playback resets when the source changes because the usage site remounts
-  // this component with `key={src}` — state initializes fresh on a new
-  // recording, and this cleanup only stops audio on unmount.
   useEffect(() => {
     const audio = audioRef.current;
     return () => audio?.pause();
@@ -38,36 +38,21 @@ export function Playback({ src }: PlaybackProps) {
     }
   };
 
-  const progress =
-    duration > 0 ? `${Math.min(100, (currentTime / duration) * 100)}%` : "0%";
-
   return (
     <div className="flex items-center gap-3">
-      <button
+      <Button
         type="button"
         aria-label={playing ? "Pause playback" : "Play recording"}
         onClick={handleToggle}
-        className="h-10 cursor-pointer rounded-[3px] border border-border px-4 text-sm transition-colors hover:bg-muted/50"
+        className="h-10 cursor-pointer rounded-[3px] border border-border bg-transparent px-4 text-foreground font-normal transition-colors hover:bg-muted"
       >
         {playing ? "Pause" : "Play"}
-      </button>
-      <div
-        role="progressbar"
-        aria-label="Playback progress"
-        aria-valuemin={0}
-        aria-valuemax={Math.round(duration)}
-        aria-valuenow={Math.round(currentTime)}
-        className="h-1.5 w-40 overflow-hidden rounded-full bg-muted"
-      >
-        <div
-          className="h-full rounded-full bg-primary"
-          style={{ width: progress }}
-        />
-      </div>
-      <span className="text-xs tabular-nums text-muted-foreground">
+      </Button>
+      <PlaybackProgressBar max={duration} current={currentTime} />
+      <Text as="span" size="xs" muted className="tabular-nums">
         {formatSeconds(currentTime)} / {formatSeconds(duration)}
-      </span>
-      <audio
+      </Text>
+      <Audio
         ref={audioRef}
         src={src}
         onPlay={() => setPlaying(true)}
@@ -78,7 +63,6 @@ export function Playback({ src }: PlaybackProps) {
           const media = event.currentTarget.duration;
           setDuration(Number.isFinite(media) ? media : 0);
         }}
-        className="hidden"
       />
     </div>
   );

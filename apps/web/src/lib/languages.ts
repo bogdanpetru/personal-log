@@ -1,17 +1,6 @@
-// Language codes offered for transcription, passed as BCP-47 to the plugin.
-// The platform has no API to *enumerate* languages (Intl.supportedValuesOf
-// covers calendars/currencies/time zones only), so the codes stay a curated
-// list — one entry per primary language (variants like en-GB just duplicate
-// the main one) — but the names come from the browser: `Intl.DisplayNames`
-// renders each code natively and in English, so no display text is hardcoded
-// here.
-
 export interface LanguageOption {
-  /** BCP-47 code passed to the transcription plugin. */
   code: string;
-  /** Native name from Intl.DisplayNames (rendered in its own locale). */
   label: string;
-  /** Short English name from Intl.DisplayNames (search text). */
   english: string;
 }
 
@@ -98,17 +87,12 @@ function displayName(code: string, locale: string): string {
   }
 }
 
-// Region qualifiers ("German (Germany)") add nothing in the list — they just
-// duplicate the main name. Keep the first part, drop the parenthetical.
 function primaryLanguageName(code: string, locale: string): string {
   const full = displayName(code, locale);
   const shortened = full.replace(/\s*\([^)]*\)$/, "").trim();
   return shortened === "" ? full : shortened;
 }
 
-// Native label from the primary subtag (de-DE → "Deutsch" rendered in de).
-// CLDR renders language names in their own orthography — "français",
-// "русский" — so the label gets sentence casing to read uniformly in the list.
 function nativeLabel(code: string): string {
   const [primary] = code.split("-");
   if (primary === undefined) {

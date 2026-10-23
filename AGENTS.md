@@ -6,6 +6,27 @@
 - Every named thing (class, component, interface, hook, type) gets its own file: `Thing.ts`, or `Thing/index.ts` plus sibling part-files when it needs multiple files.
 - This applies across the whole repo: apps, packages, components, classes, hooks.
 - Code inside the same package imports specific files directly; only external consumers go through the package's `index.ts`.
+- **No comments in code — code must be self-explanatory.** Never add
+  explanatory comments (inline, block, or JSDoc prose): express intent
+  through naming and structure instead. Non-obvious platform constraints
+  belong in the relevant README/docs, not the code.
+
+## UI layering (apps/web)
+
+- Two levels only: `src/components/` and `src/views/` — no `components/ui/`
+  nesting.
+- `src/components/` — the flat UI component lib: pure presentational
+  components, one simple component per file. Its primitive wrappers (`Text`,
+  `Button`, `Input`, `List`/`ListItem`, `Audio`, PascalCase) are the only
+  place raw HTML primitives are rendered. Visible text goes through `Text` —
+  never a direct `<p>`/`<span>`. Layout-only `<div>`s are allowed anywhere.
+- `src/views/` — anything with business logic (core wiring, media control).
+- `src/views/components/` — optional: view-specific components that are
+  neither pure lib UI nor reusable; created only when needed.
+- Registry components come from the shadcn CLI (`ui` alias points at
+  `@/components`; rename generated files to PascalCase afterwards).
+- Full conventions: `apps/web/README.md` (architecture doc, human + LLM
+  readable).
 
 ## Subagents (all on the cheap model, `opencode-go/glm-5.3-flash`)
 

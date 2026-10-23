@@ -1,32 +1,55 @@
-# React + TypeScript + Vite
+# Personal Log — web app
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+React 19 + TypeScript + Vite + Tailwind v4. Single-page recorder UI.
 
-Currently, two official plugins are available:
+## Layered source layout (`src/`) — two levels only
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- `components/` — the UI component **lib**: pure, presentational components
+  only (props in → JSX out; no core access, no app-level decisions), one
+  simple component per file. It spans the raw-element primitive wrappers
+  (`Text`, `Button`, `Input`, `List`/`ListItem`, `Audio`) and composed pure
+  components (`Timer`, `Transcript`, `AppShell`, `PlaybackProgressBar`,
+  `LanguageSelect` + its leaves, the recorder buttons). Flat — no `ui/`
+  subfolder.
+- `views/` — business-logic screens: the PersonalLog core wiring
+  (`RecorderView`), audio playback control (`PlaybackView`).
+- `views/components/` — optional: view-specific components that are neither
+  pure-lib UI nor reusable; created only when needed. None today.
 
-## React Compiler
+Support layers: `hooks/` (`usePersonalLog` wires the core), `lib/` (pure
+non-React logic and data: `languages`, `languageSearch` — the language codes
+are a curated list because the platform has no API to enumerate languages;
+labels come from `Intl.DisplayNames`).
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Rules
 
-## Expanding the Oxlint configuration
+1. Only the lib's primitive files (`Text`, `Button`, `Input`, `List`,
+   `ListItem`, `Audio`) render raw HTML primitives. `<p>`, `<span>`,
+   `<button>`, `<input>`, `<ul>`, `<li>`, `<audio>` directly are forbidden
+   anywhere else.
+2. Visible text always goes through `Text` (`size`, `muted`, `as`).
+   Interactive controls always go through `Button` etc. — never a bare
+   `<button>`.
+3. Layout-only `<div>`s (flex containers, wrappers, panels) are fine in any
+   layer.
+4. Placement: pure → `components/`, business view → `views/`, view-specific
+   non-pure component → `views/components/`, raw element → a `components/`
+   primitive first.
+5. shadcn is the adopted primitive system: registry components via the CLI
+   (`components.json` points `ui` at `@/components`, so adds land flat —
+   rename the generated files to PascalCase and update imports afterwards);
+   registry-less primitives (`Text`, `List`/`ListItem`, `Audio`) are authored
+   in shadcn house style, never bespoke one-offs.
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+## Guard
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+rg -n '<(button|input|p|span|ul|li|audio)[ >]' src -g '*.tsx' -g '!src/components/{Text,Button,Input,List,ListItem,Audio}.tsx'
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+should print nothing.
+
+**Component-library shadcn note:** `components.json` preset is `radix-nova`;
+the CLI may write to a literal `@/` directory or append theme CSS to
+`index.css` — move generated files into `src/components/` and report the
+diffs.

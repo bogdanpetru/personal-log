@@ -1,3 +1,5 @@
+import { Button } from "@/components/Button";
+
 interface RecordButtonProps {
   supported: boolean;
   onToggle: () => void;
@@ -5,7 +7,7 @@ interface RecordButtonProps {
 
 export function RecordButton({ supported, onToggle }: RecordButtonProps) {
   return (
-    <button
+    <Button
       type="button"
       aria-label="Start recording"
       disabled={!supported}

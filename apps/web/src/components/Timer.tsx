@@ -1,3 +1,5 @@
+import { Text } from "@/components/Text";
+
 interface TimerProps {
   seconds: number;
 }
@@ -10,8 +12,8 @@ function format(seconds: number): string {
 
 export function Timer({ seconds }: TimerProps) {
   return (
-    <p role="timer" className="text-3xl tabular-nums">
+    <Text role="timer" size="display" className="tabular-nums">
       {format(seconds)}
-    </p>
+    </Text>
   );
 }

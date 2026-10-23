@@ -1,3 +1,5 @@
+import { Button } from "@/components/Button";
+
 interface PauseResumeButtonProps {
   paused: boolean;
   onToggle: () => void;
@@ -8,13 +10,13 @@ export function PauseResumeButton({
   onToggle,
 }: PauseResumeButtonProps) {
   return (
-    <button
+    <Button
       type="button"
       aria-label={paused ? "Resume recording" : "Pause recording"}
       onClick={onToggle}
-      className="h-10 cursor-pointer rounded-[3px] border border-border px-4 text-sm transition-colors hover:bg-muted/50"
+      className="h-10 cursor-pointer rounded-[3px] border border-border bg-transparent px-4 text-foreground font-normal transition-colors hover:bg-muted"
     >
       {paused ? "Resume" : "Pause"}
-    </button>
+    </Button>
   );
 }

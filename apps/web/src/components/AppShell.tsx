@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 
 interface AppShellProps {
-  /** Header-bar content: language selector; plus the stop button while recording. */
   header: ReactNode;
   children: ReactNode;
 }

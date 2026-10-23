@@ -17,8 +17,6 @@ test("preserves newlines with pre-style wrapping, left-aligned", () => {
     <Transcript transcript={"first\nsecond"} partial="" />,
   );
   const paragraph = container.querySelector("p");
-  // textContent (not toHaveTextContent, which collapses whitespace) keeps the
-  // literal line break.
   expect(paragraph?.textContent).toBe("first\nsecond");
   expect(paragraph).toHaveClass("whitespace-pre-wrap");
   expect(paragraph?.parentElement).toHaveClass("text-left");

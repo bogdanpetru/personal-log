@@ -6,23 +6,13 @@ import { OpfsStoragePlugin } from "@personal-log/plugin-storage-opfs";
 import { NativeSpeechPlugin } from "@personal-log/plugin-transcription-native";
 
 interface UsePersonalLog {
-  /** The headless core; commands go through it. */
   core: PersonalLog;
   state: PersonalLogState;
   supported: boolean;
-  /** Object URL of the last completed recording, playable until discarded. */
   playbackSrc: string | null;
 }
 
-/**
- * App-side binding of the headless core: one PersonalLog instance, its state
- * exposed as a React store subscription, and the last recorded log turned
- * into a playback object URL. All UI logic stays in the components.
- */
 export function usePersonalLog(): UsePersonalLog {
-  // One core instance for the lifetime of the app (lazy state initializer —
-  // it never gets replaced, only read). The plugins are composed here, at
-  // the application level — the core itself defaults to nothing.
   const [core] = useState(
     () =>
       new PersonalLog({
@@ -41,9 +31,6 @@ export function usePersonalLog(): UsePersonalLog {
 
   const [playbackSrc, setPlaybackSrc] = useState<string | null>(null);
 
-  // Completed logs become playable object URLs. The previous URL goes away
-  // when a new recording session starts or the log is discarded (nothing was
-  // recognized).
   useEffect(() => {
     let url: string | null = null;
     const show = (blob: Blob) => {

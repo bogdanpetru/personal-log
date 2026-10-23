@@ -9,8 +9,6 @@ function setNavigatorLanguage(code: string): void {
 }
 
 afterEach(() => {
-  // Remove the own-property override; the jsdom Navigator.prototype getter
-  // ("en-US") becomes visible again.
   Reflect.deleteProperty(window.navigator, "language");
 });
 

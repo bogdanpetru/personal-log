@@ -1,9 +1,9 @@
 import { useEffect, useRef } from "react";
+import { Text } from "@/components/Text";
 
 interface TranscriptProps {
   transcript: string;
   partial: string;
-  /** While true, arriving text scrolls the panel to the bottom (recording). */
   autoScroll?: boolean;
 }
 
@@ -14,7 +14,6 @@ export function Transcript({
 }: TranscriptProps) {
   const panelRef = useRef<HTMLDivElement>(null);
 
-  // Keep the newest transcription in view while the text streams in.
   useEffect(() => {
     if (!autoScroll) {
       return;
@@ -33,13 +32,15 @@ export function Transcript({
       ref={panelRef}
       className="min-h-0 w-full max-w-prose flex-1 overflow-y-auto text-left"
     >
-      {/* Pre-style wrapping preserves the paragraph breaks inserted on pause. */}
-      <p className="whitespace-pre-wrap">
+      <Text className="whitespace-pre-wrap">
         {transcript}
         {partial !== "" && (
-          <span className="text-muted-foreground"> {partial}</span>
+          <Text as="span" muted>
+            {" "}
+            {partial}
+          </Text>
         )}
-      </p>
+      </Text>
     </div>
   );
 }
