@@ -40,17 +40,17 @@ export function PlaybackView({ src }: PlaybackViewProps) {
   };
 
   return (
-    <div className="flex items-center gap-s2">
+    <div className="flex items-center gap-3">
       <Button
         type="button"
         aria-label={playing ? "Pause playback" : "Play recording"}
         onClick={handleToggle}
-        className="h-s4 cursor-pointer rounded-full border border-border bg-transparent px-s3 text-foreground transition-colors hover:bg-muted"
+        className="h-10 cursor-pointer rounded-full border border-border bg-transparent px-4 text-foreground transition-colors hover:bg-muted"
       >
         {playing ? (
-          <CirclePause aria-hidden className="size-s3" />
+          <CirclePause aria-hidden className="size-7" />
         ) : (
-          <CirclePlay aria-hidden className="size-s3" />
+          <CirclePlay aria-hidden className="size-7" />
         )}
       </Button>
       <PlaybackProgressBar max={duration} current={currentTime} />

@@ -9,7 +9,7 @@ export function LanguageTag({ label }: LanguageTagProps) {
     <Text
       as="span"
       size="xs"
-      className="rounded-full bg-muted px-s2 py-s1 text-foreground"
+      className="rounded-full bg-muted px-3 py-1 text-foreground"
     >
       {label}
     </Text>

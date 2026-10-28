@@ -30,7 +30,7 @@ export function LanguageTrigger({
       aria-controls={listId}
       aria-activedescendant={activeId}
       onClick={onToggle}
-      className="h-s4 flex w-full cursor-pointer items-center justify-between gap-s2 rounded-md border border-border bg-transparent px-s3 text-foreground transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-40"
+      className="h-10 flex w-full cursor-pointer items-center justify-between gap-2 rounded-[3px] border border-border bg-transparent px-3 text-foreground transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-40"
       {...props}
     >
       <Text as="span" size="sm" className="truncate text-foreground">

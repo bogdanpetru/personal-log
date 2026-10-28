@@ -251,7 +251,19 @@ Run: `cd apps/web && pnpm test && pnpm build`
 
 Done when: exit code 0.
 
-### 38. [ ] Commit (held)
+### 38. [x] Token pass reverted (user decision)
+
+Undo steps 33–36: remove `--type-*`/`--spacing-s*`/`--container-panel` tokens and `@theme` mappings from index.css; restore component classes to step-32 state (gap/p/px/py/h/size values as before the pass, `max-w-[640px]`).
+
+Done when: `rg 'p-s|gap-s|size-s[0-9]|h-s4|max-w-panel|text-(body|caption|lead|display)|--type-|--spacing-s|--container-panel' apps/web/src` has no hits.
+
+### 39. [x] Verify build and tests (final)
+
+Run: `cd apps/web && pnpm test && pnpm build`
+
+Done when: exit code 0.
+
+### 40. [x] Commit (held)
 
 Run only after user approval: `git add -A && git commit -m "PL-8: UI theme + recording title"`
 Then mark checkboxes.

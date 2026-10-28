@@ -11,7 +11,7 @@ export function StopButton({ onStop }: StopButtonProps) {
       type="button"
       aria-label="Stop recording"
       onClick={onStop}
-      className="h-s4 cursor-pointer rounded-full border border-transparent bg-record px-s3 text-white transition-colors hover:bg-record-hover"
+      className="h-10 cursor-pointer rounded-full border border-transparent bg-record px-4 text-white transition-colors hover:bg-record-hover"
     >
       <Square aria-hidden />
     </Button>

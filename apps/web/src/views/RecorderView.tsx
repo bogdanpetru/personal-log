@@ -66,12 +66,12 @@ export function RecorderView() {
   return (
     <AppShell>
       {recording ? (
-        <div className="flex w-full flex-col items-center gap-s3">
-          <div className="flex items-center gap-s2">
+        <div className="flex w-full flex-col items-center gap-4">
+          <div className="flex items-center gap-3">
             <RecordingIndicator />
             <Timer seconds={state.seconds} />
           </div>
-          <div className="flex items-center gap-s2">
+          <div className="flex items-center gap-3">
             <PauseResumeButton paused={paused} onToggle={handleTogglePause} />
             <StopButton onStop={handleStop} />
           </div>
@@ -85,7 +85,7 @@ export function RecorderView() {
           <LanguageTag label={viewLanguageLabel} />
         </>
       ) : (
-        <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-s4">
+        <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-6">
           <RecordButton supported={supported} onToggle={start} />
           <LanguageSelect
             disabled={recording}
