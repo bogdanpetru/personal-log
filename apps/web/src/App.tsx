@@ -1,102 +1,63 @@
 import { useCallback, useEffect, useState } from "react";
+import { Link, Navigate, Route, Routes, useNavigate } from "react-router";
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/Button";
-import { LogListView } from "@/views/LogListView";
-import { LogView } from "@/views/LogView";
-import { RecorderView } from "@/views/RecorderView";
 import { usePersonalLog } from "@/hooks/usePersonalLog";
+import { LogListView } from "@/views/LogListView";
+import { LogViewRoute } from "@/views/LogView";
+import { RecorderView } from "@/views/RecorderView";
 import type { LogId } from "@personal-log/plugin-api";
 
-type AppMode = "list" | "record" | "view";
-
 export default function App() {
-  const {
-    logs,
-    refreshLogs,
-    loadLogData,
-    deleteLog,
-    finishedLog,
-    playbackSrc,
-    playbackAudio,
-  } = usePersonalLog();
-  const [mode, setMode] = useState<AppMode>("list");
+  const { core, logs, refreshLogs, deleteLog } = usePersonalLog();
+  const navigate = useNavigate();
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    void refreshLogs().then((loaded) => {
-      if (loaded.length === 0) {
-        setMode("record");
-      }
-    });
+    void refreshLogs().finally(() => setLoaded(true));
   }, [refreshLogs]);
 
-  const handleRecorded = useCallback(() => {
-    void refreshLogs();
-    setMode("view");
-  }, [refreshLogs]);
-
-  const handleOpen = useCallback(
-    async (logId: LogId) => {
-      const loaded = await loadLogData(logId);
-      if (loaded === undefined) {
-        return;
-      }
-      setMode("view");
-    },
-    [loadLogData],
+  useEffect(
+    () =>
+      core.on("recorded", (log) => {
+        void refreshLogs();
+        navigate(`/records/${log.id}`);
+      }),
+    [core, navigate, refreshLogs],
   );
 
   const handleDelete = useCallback(
     async (logId: LogId) => {
       await deleteLog(logId);
-      setMode(logs.length <= 1 ? "record" : "list");
+      navigate(logs.length <= 1 ? "/record" : "/records");
     },
-    [deleteLog, logs.length],
+    [deleteLog, logs.length, navigate],
   );
 
-  const handleBackToList = useCallback(() => {
-    setMode("list");
-  }, []);
-
-  const handleNew = useCallback(() => {
-    setMode("record");
-  }, []);
-
-  if (mode === "record") {
-    return (
-      <RecorderView
-        onRecorded={handleRecorded}
-        onBack={logs.length > 0 ? handleBackToList : undefined}
-      />
-    );
-  }
-
-  if (
-    mode === "view" &&
-    finishedLog !== null &&
-    playbackSrc !== null &&
-    playbackAudio !== null
-  ) {
-    return (
-      <LogView
-        log={finishedLog}
-        audio={playbackAudio}
-        audioUrl={playbackSrc}
-        onBack={handleBackToList}
-      />
-    );
-  }
-
   const header = (
-    <Button type="button" className="ml-auto" onClick={handleNew}>
-      New
+    <Button asChild className="ml-auto">
+      <Link to="/record">New</Link>
     </Button>
   );
 
-  return (
+  const list = (
     <AppShell header={header}>
       <div className="min-h-0 w-full flex-1 overflow-y-auto pb-6">
-        <LogListView logs={logs} onOpen={handleOpen} onDelete={handleDelete} />
+        {loaded && logs.length === 0 ? (
+          <Navigate to="/record" replace />
+        ) : (
+          <LogListView logs={logs} onDelete={handleDelete} />
+        )}
       </div>
     </AppShell>
+  );
+
+  return (
+    <Routes>
+      <Route path="/" element={<Navigate to="/records" replace />} />
+      <Route path="/records" element={list} />
+      <Route path="/record" element={<RecorderView />} />
+      <Route path="/records/:logId" element={<LogViewRoute />} />
+    </Routes>
   );
 }

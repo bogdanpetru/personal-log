@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { ArrowLeft } from "lucide-react";
+import { Link } from "react-router";
 import { AppShell } from "@/components/AppShell";
 import { Badge } from "@/components/Badge";
 import { Button } from "@/components/Button";
@@ -16,12 +17,7 @@ import { usePersonalLog } from "@/hooks/usePersonalLog";
 import { PlaybackView } from "@/views/PlaybackView";
 import { LANGUAGES, defaultLanguage } from "@/lib/languages";
 
-interface RecorderViewProps {
-  onRecorded?: () => void;
-  onBack?: () => void;
-}
-
-export function RecorderView({ onRecorded, onBack }: RecorderViewProps) {
+export function RecorderView() {
   const { core, state, supported, playbackSrc, finishedLog, getAudioStream } =
     usePersonalLog();
   const [language, setLanguage] = useState(defaultLanguage());
@@ -32,20 +28,14 @@ export function RecorderView({ onRecorded, onBack }: RecorderViewProps) {
     core.setLanguage(language);
   }, [core, language]);
 
-  useEffect(() => {
-    if (onRecorded === undefined) {
-      return;
-    }
-    return core.on("recorded", onRecorded);
-  }, [core, onRecorded]);
-
-  const header =
-    onBack === undefined ? undefined : (
-      <Button type="button" variant="ghost" size="sm" onClick={onBack}>
+  const header = (
+    <Button asChild variant="ghost" size="sm">
+      <Link to="/records">
         <ArrowLeft aria-hidden className="size-4" />
         Back
-      </Button>
-    );
+      </Link>
+    </Button>
+  );
 
   const recording = state.status !== "idle";
   const paused = state.status === "paused";

@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router";
 import { describe, expect, it, vi } from "vitest";
 import { LogListView } from "./LogListView";
 import type { Log } from "@personal-log/plugin-api";
@@ -18,6 +19,14 @@ function makeLog(id: string, createdAt: string): Log {
   };
 }
 
+function renderList(logs: Log[]) {
+  return render(
+    <MemoryRouter>
+      <LogListView logs={logs} onDelete={vi.fn(async () => undefined)} />
+    </MemoryRouter>,
+  );
+}
+
 describe("LogListView", () => {
   const logs = [
     makeLog("a", "2025-01-01T09:00:00.000Z"),
@@ -26,13 +35,7 @@ describe("LogListView", () => {
   ];
 
   it("groups rows under one date heading per day", () => {
-    render(
-      <LogListView
-        logs={logs}
-        onOpen={vi.fn()}
-        onDelete={vi.fn(async () => undefined)}
-      />,
-    );
+    renderList(logs);
     const headings = screen
       .getAllByRole("heading")
       .map((heading) => heading.textContent);
@@ -42,14 +45,16 @@ describe("LogListView", () => {
     );
   });
 
+  it("renders every row as a link to the log's view route", () => {
+    renderList(logs);
+    const links = screen
+      .getAllByRole("link")
+      .map((link) => link.getAttribute("href"));
+    expect(links).toEqual(["/records/a", "/records/b", "/records/c"]);
+  });
+
   it("renders a delete button for every row", () => {
-    render(
-      <LogListView
-        logs={logs}
-        onOpen={vi.fn()}
-        onDelete={vi.fn(async () => undefined)}
-      />,
-    );
+    renderList(logs);
     expect(
       screen.getAllByRole("button", { name: "Delete recording" }),
     ).toHaveLength(3);

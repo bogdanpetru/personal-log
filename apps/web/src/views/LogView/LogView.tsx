@@ -1,5 +1,6 @@
-import { useMemo } from "react";
+import { useMemo, type ReactNode } from "react";
 import { ArrowLeft } from "lucide-react";
+import { Link } from "react-router";
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/Button";
 import { Text } from "@/components/Text";
@@ -13,7 +14,6 @@ interface LogViewProps {
   log: Log;
   audio: Blob;
   audioUrl: string;
-  onBack: () => void;
 }
 
 function formatTitle(log: Log): string {
@@ -27,27 +27,33 @@ function formatTitle(log: Log): string {
   });
 }
 
-export function LogView({ log, audio, audioUrl, onBack }: LogViewProps) {
+function headerFor(log: Log, audio: Blob, audioUrl: string): ReactNode {
   const language = log.transcriptions[0]?.language;
-  const header = useMemo(
-    () => (
-      <>
-        <Button type="button" variant="ghost" size="sm" onClick={onBack}>
+  return (
+    <>
+      <Button asChild variant="ghost" size="sm">
+        <Link to="/records">
           <ArrowLeft aria-hidden className="size-4" />
           Back
-        </Button>
-        <div className="flex items-center gap-1">
-          <ShareButton log={log} audio={audio} audioUrl={audioUrl} />
-          {language !== undefined && (
-            <Text as="span" size="sm" muted>
-              {LANGUAGES.find((option) => option.code === language)?.label ??
-                language}
-            </Text>
-          )}
-        </div>
-      </>
-    ),
-    [language, log, audio, audioUrl, onBack],
+        </Link>
+      </Button>
+      <div className="flex items-center gap-1">
+        <ShareButton log={log} audio={audio} audioUrl={audioUrl} />
+        {language !== undefined && (
+          <Text as="span" size="sm" muted>
+            {LANGUAGES.find((option) => option.code === language)?.label ??
+              language}
+          </Text>
+        )}
+      </div>
+    </>
+  );
+}
+
+export function LogView({ log, audio, audioUrl }: LogViewProps) {
+  const header = useMemo(
+    () => headerFor(log, audio, audioUrl),
+    [log, audio, audioUrl],
   );
 
   return (

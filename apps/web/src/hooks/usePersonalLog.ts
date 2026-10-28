@@ -16,27 +16,27 @@ interface UsePersonalLog {
   getAudioStream: () => MediaStream | null;
   logs: Log[];
   refreshLogs: () => Promise<Log[]>;
-  loadLogData: (logId: LogId) => Promise<{ log: Log; url: string } | undefined>;
+  loadLogData: (
+    logId: LogId,
+  ) => Promise<{ log: Log; audio: Blob; url: string } | undefined>;
   deleteLog: (logId: LogId) => Promise<void>;
 }
 
+const recorder = new MediaRecorderRecorder();
+const core = new PersonalLog({
+  recorder,
+  transcriber: new NativeSpeechPlugin(),
+  storage: new OpfsStoragePlugin(),
+});
+
 export function usePersonalLog(): UsePersonalLog {
-  const [recorder] = useState(() => new MediaRecorderRecorder());
-  const [core] = useState(
-    () =>
-      new PersonalLog({
-        recorder,
-        transcriber: new NativeSpeechPlugin(),
-        storage: new OpfsStoragePlugin(),
-      }),
-  );
-  const getAudioStream = useCallback(() => recorder.getStream(), [recorder]);
+  const getAudioStream = useCallback(() => recorder.getStream(), []);
 
   const subscribe = useCallback(
     (onStoreChange: () => void) => core.on("state", onStoreChange),
-    [core],
+    [],
   );
-  const getSnapshot = useCallback(() => core.getState(), [core]);
+  const getSnapshot = useCallback(() => core.getState(), []);
   const state = useSyncExternalStore(subscribe, getSnapshot);
 
   const [playbackSrc, setPlaybackSrc] = useState<string | null>(null);
@@ -48,7 +48,7 @@ export function usePersonalLog(): UsePersonalLog {
     const next = await core.getLogs();
     setLogs(next);
     return next;
-  }, [core]);
+  }, []);
 
   const loadLogData = useCallback(
     async (logId: LogId) => {
@@ -66,18 +66,15 @@ export function usePersonalLog(): UsePersonalLog {
         }
         return url;
       });
-      return { log, url };
+      return { log, audio: data.audio, url };
     },
-    [core],
+    [],
   );
 
-  const deleteLog = useCallback(
-    async (logId: LogId) => {
-      await core.deleteLog(logId);
-      setLogs((prev) => prev.filter((log) => log.id !== logId));
-    },
-    [core],
-  );
+  const deleteLog = useCallback(async (logId: LogId) => {
+    await core.deleteLog(logId);
+    setLogs((prev) => prev.filter((log) => log.id !== logId));
+  }, []);
 
   useEffect(() => {
     let url: string | null = null;
@@ -116,7 +113,7 @@ export function usePersonalLog(): UsePersonalLog {
       offDiscarded();
       offState();
     };
-  }, [core]);
+  }, []);
 
   return {
     core,

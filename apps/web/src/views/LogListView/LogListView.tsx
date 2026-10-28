@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react";
 import { Trash2 } from "lucide-react";
+import { Link } from "react-router";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,7 +17,6 @@ import type { Log, LogId } from "@personal-log/plugin-api";
 
 interface LogListViewProps {
   logs: Log[];
-  onOpen: (logId: LogId) => void;
   onDelete: (logId: LogId) => Promise<void>;
 }
 
@@ -57,7 +57,7 @@ function groupByDay(logs: Log[]): DayGroup[] {
   return groups;
 }
 
-export function LogListView({ logs, onOpen, onDelete }: LogListViewProps) {
+export function LogListView({ logs, onDelete }: LogListViewProps) {
   const [pendingId, setPendingId] = useState<LogId | null>(null);
   const groups = groupByDay(logs);
 
@@ -83,23 +83,18 @@ export function LogListView({ logs, onOpen, onDelete }: LogListViewProps) {
                   key={log.id}
                   className="group grid grid-cols-[1fr_auto] items-center"
                 >
-                  <button
-                    type="button"
-                    onClick={() => onOpen(log.id)}
-                    className="py-3 text-left"
-                  >
+                  <Link to={`/records/${log.id}`} className="py-3">
                     <Text as="span" size="base" className="text-white">
                       {formatTitle(log)}
                     </Text>
-                  </button>
+                  </Link>
                   <Button
                     type="button"
                     variant="ghost"
                     size="icon-sm"
                     aria-label="Delete recording"
                     className="text-muted-foreground opacity-100 transition-opacity hover:text-destructive sm:opacity-0 sm:group-hover:opacity-100"
-                    onClick={(event) => {
-                      event.stopPropagation();
+                    onClick={() => {
                       setPendingId(log.id);
                     }}
                   >
