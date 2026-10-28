@@ -1,22 +1,25 @@
 import { useEffect, useState } from "react";
 import { AppShell } from "@/components/AppShell";
-import { LanguageSelect } from "@/components/LanguageSelect";
-import { LanguageTag } from "@/components/LanguageTag";
-import { PauseResumeButton } from "@/components/PauseResumeButton";
-import { RecordButton } from "@/components/RecordButton";
-import { RecordingIndicator } from "@/components/RecordingIndicator";
-import { RecordingTitle } from "@/components/RecordingTitle";
-import { StopButton } from "@/components/StopButton";
-import { Timer } from "@/components/Timer";
-import { Transcript } from "@/components/Transcript";
+import { Badge } from "@/components/Badge";
+import { LanguageSelector } from "@/views/components/LanguageSelector";
+import { PauseResumeButton } from "@/views/RecorderView/components/PauseResumeButton";
+import { RecordButton } from "@/views/RecorderView/components/RecordButton";
+import { RecordingTitle } from "@/views/RecorderView/components/RecordingTitle";
+import { StopButton } from "@/views/RecorderView/components/StopButton";
+import { Timer } from "@/views/RecorderView/components/Timer";
+import { Transcript } from "@/views/RecorderView/components/Transcript";
+import { Waveform } from "@/views/RecorderView/components/Waveform";
+import { useAudioLevel } from "@/hooks/useAudioLevel";
 import { usePersonalLog } from "@/hooks/usePersonalLog";
 import { PlaybackView } from "@/views/PlaybackView";
 import { LANGUAGES, defaultLanguage } from "@/lib/languages";
 
 export function RecorderView() {
-  const { core, state, supported, playbackSrc, finishedLog } = usePersonalLog();
+  const { core, state, supported, playbackSrc, finishedLog, getAudioStream } =
+    usePersonalLog();
   const [language, setLanguage] = useState(defaultLanguage());
   const [title, setTitle] = useState("");
+  const levels = useAudioLevel(state.status === "recording", getAudioStream);
 
   useEffect(() => {
     core.setLanguage(language);
@@ -62,43 +65,47 @@ export function RecorderView() {
     : playingBack
       ? (finishedLog?.transcriptions[0]?.text ?? "")
       : "";
+  const titleRow = (
+    <div className="flex w-full items-center justify-between gap-5 self-start">
+      <RecordingTitle title={title} onCommit={setTitle} />
+      <Badge variant="secondary">{viewLanguageLabel}</Badge>
+    </div>
+  );
 
   return (
     <AppShell>
       {recording ? (
         <div className="flex w-full flex-col items-center gap-4">
-          <div className="flex items-center gap-3">
-            <RecordingIndicator />
-            <Timer seconds={state.seconds} />
-          </div>
+          <Waveform levels={levels} className="mb-4 h-20 w-full text-foreground" />
+          <Timer seconds={state.seconds} />
           <div className="flex items-center gap-3">
             <PauseResumeButton paused={paused} onToggle={handleTogglePause} />
             <StopButton onStop={handleStop} />
           </div>
-          <RecordingTitle title={title} onCommit={setTitle} />
-          <LanguageTag label={viewLanguageLabel} />
+          {titleRow}
         </div>
       ) : playingBack ? (
         <>
           <PlaybackView key={playbackSrc} src={playbackSrc} />
-          <RecordingTitle title={title} onCommit={setTitle} />
-          <LanguageTag label={viewLanguageLabel} />
+          {titleRow}
         </>
       ) : (
         <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-6">
           <RecordButton supported={supported} onToggle={start} />
-          <LanguageSelect
+          <LanguageSelector
             disabled={recording}
             value={language}
             onChange={setLanguage}
           />
         </div>
       )}
-      <Transcript
-        autoScroll={recording}
-        transcript={transcript}
-        partial={recording ? state.partial : ""}
-      />
+      {recording || playingBack ? (
+        <Transcript
+          autoScroll={recording}
+          transcript={transcript}
+          partial={recording ? state.partial : ""}
+        />
+      ) : null}
     </AppShell>
   );
 }

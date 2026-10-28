@@ -13,16 +13,22 @@
 
 ## UI layering (apps/web)
 
-- Two levels only: `src/components/` and `src/views/` — no `components/ui/`
-  nesting.
-- `src/components/` — the flat UI component lib: pure presentational
-  components, one simple component per file. Its primitive wrappers (`Text`,
-  `Button`, `Input`, `List`/`ListItem`, `Audio`, PascalCase) are the only
-  place raw HTML primitives are rendered. Visible text goes through `Text` —
+- `src/components/` — the pure UI lib: simple, reusable building blocks only
+  (props in → JSX out; no core access, no app-level data, no business logic),
+  one simple component per file. Shadcn/registry primitives (`Button`,
+  `Input`, `Badge`, `Progress`, `Popover`, `Command`, `Combobox`), authored
+  primitives (`Text`, `Audio`) and the layout-only `AppShell` live here. Only
+  these primitive files render raw HTML; visible text goes through `Text` —
   never a direct `<p>`/`<span>`. Layout-only `<div>`s are allowed anywhere.
-- `src/views/` — anything with business logic (core wiring, media control).
-- `src/views/components/` — optional: view-specific components that are
-  neither pure lib UI nor reusable; created only when needed.
+- `src/views/<View>/` — a business-logic screen: an `index.ts` barrel, a
+  `<View>.tsx` screen, and a `components/` folder for components owned by
+  that view (e.g. `views/RecorderView/RecorderView.tsx`).
+- `src/views/<View>/components/` — components owned by one view, composed
+  from the UI lib, with view-specific semantics (e.g.
+  `views/RecorderView/components/RecordButton.tsx`).
+- `src/views/components/` — shared view-layer components: more than pure UI
+  (some domain/business logic) but not tied to a single view (e.g.
+  `views/components/LanguageSelector.tsx`).
 - Registry components come from the shadcn CLI (`ui` alias points at
   `@/components`; rename generated files to PascalCase afterwards).
 - Full conventions: `apps/web/README.md` (architecture doc, human + LLM

@@ -2,9 +2,10 @@ import { render, screen } from "@testing-library/react";
 import { expect, test } from "vitest";
 import { Transcript } from "./Transcript";
 
-test("renders nothing while there is no text", () => {
+test("renders an empty scrollable region while there is no text", () => {
   const { container } = render(<Transcript transcript="" partial="" />);
-  expect(container).toBeEmptyDOMElement();
+  const region = container.querySelector("div");
+  expect(region).toHaveClass("flex-1", "overflow-y-auto");
 });
 
 test("renders finals followed by the muted partial", () => {

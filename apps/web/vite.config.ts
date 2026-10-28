@@ -22,8 +22,8 @@ export default defineConfig({
         short_name: "Personal Log",
         display: "standalone",
         start_url: "/",
-        theme_color: "#0f172a",
-        background_color: "#ffffff",
+        theme_color: "#0a0a0a",
+        background_color: "#0a0a0a",
         icons: [
           { src: "pwa-64x64.png", sizes: "64x64", type: "image/png" },
           { src: "pwa-192x192.png", sizes: "192x192", type: "image/png" },

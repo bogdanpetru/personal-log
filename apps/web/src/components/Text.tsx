@@ -6,7 +6,7 @@ const sizes = {
   sm: "text-base font-light",
   base: "text-lg font-light",
   title: "text-2xl font-bold",
-  display: "text-5xl font-light",
+  display: "text-[5rem] leading-none font-light",
 } as const;
 
 interface TextProps extends HTMLAttributes<HTMLElement> {

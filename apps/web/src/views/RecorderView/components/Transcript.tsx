@@ -24,9 +24,6 @@ export function Transcript({
     }
   }, [autoScroll, partial, transcript]);
 
-  if (transcript === "" && partial === "") {
-    return null;
-  }
   return (
     <div
       ref={panelRef}

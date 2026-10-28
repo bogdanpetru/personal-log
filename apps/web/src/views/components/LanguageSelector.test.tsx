@@ -1,10 +1,10 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { vi } from "vitest";
-import { LanguageSelect } from "./LanguageSelect";
+import { LanguageSelector } from "./LanguageSelector";
 
 function renderSelect(value = "en-US") {
   const onChange = vi.fn();
-  render(<LanguageSelect value={value} onChange={onChange} />);
+  render(<LanguageSelector value={value} onChange={onChange} />);
   const trigger = screen.getByRole("combobox", {
     name: "Transcription language",
   });
@@ -35,7 +35,9 @@ test("search filters by native name, ignoring diacritics", () => {
   openPopup();
   fireEvent.change(searchBox(), { target: { value: "franc" } });
   expect(option(/Français/)).toBeInTheDocument();
-  expect(screen.queryByRole("option", { name: /Deutsch/ })).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole("option", { name: /Deutsch/ }),
+  ).not.toBeInTheDocument();
 });
 
 test("search matches the English name too (chinese → 中文)", () => {

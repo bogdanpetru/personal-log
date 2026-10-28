@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { CirclePause, CirclePlay } from "lucide-react";
 import { Audio } from "@/components/Audio";
 import { Button } from "@/components/Button";
+import { Progress } from "@/components/Progress";
 import { Text } from "@/components/Text";
-import { PlaybackProgressBar } from "@/components/PlaybackProgressBar";
 
 interface PlaybackViewProps {
   src: string;
@@ -21,6 +21,8 @@ export function PlaybackView({ src }: PlaybackViewProps) {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const progress =
+    duration > 0 ? Math.min(100, (currentTime / duration) * 100) : 0;
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -45,15 +47,20 @@ export function PlaybackView({ src }: PlaybackViewProps) {
         type="button"
         aria-label={playing ? "Pause playback" : "Play recording"}
         onClick={handleToggle}
-        className="h-10 cursor-pointer rounded-full border border-border bg-transparent px-4 text-foreground transition-colors hover:bg-muted"
+        variant="outline"
+        size="icon"
       >
         {playing ? (
-          <CirclePause aria-hidden className="size-7" />
+          <CirclePause aria-hidden />
         ) : (
-          <CirclePlay aria-hidden className="size-7" />
+          <CirclePlay aria-hidden />
         )}
       </Button>
-      <PlaybackProgressBar max={duration} current={currentTime} />
+      <Progress
+        value={progress}
+        aria-label="Playback progress"
+        className="w-40"
+      />
       <Text as="span" size="xs" muted className="tabular-nums">
         {formatSeconds(currentTime)} / {formatSeconds(duration)}
       </Text>

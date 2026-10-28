@@ -58,6 +58,10 @@ export class MediaRecorderRecorder implements Recorder {
     return recording;
   }
 
+  getStream(): MediaStream | null {
+    return this.stream;
+  }
+
   dispose(): void {
     this.stream?.getTracks().forEach((track) => track.stop());
     this.stream = null;

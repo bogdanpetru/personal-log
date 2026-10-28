@@ -12,17 +12,20 @@ interface UsePersonalLog {
   supported: boolean;
   playbackSrc: string | null;
   finishedLog: Log | null;
+  getAudioStream: () => MediaStream | null;
 }
 
 export function usePersonalLog(): UsePersonalLog {
+  const [recorder] = useState(() => new MediaRecorderRecorder());
   const [core] = useState(
     () =>
       new PersonalLog({
-        recorder: new MediaRecorderRecorder(),
+        recorder,
         transcriber: new NativeSpeechPlugin(),
         storage: new OpfsStoragePlugin(),
       }),
   );
+  const getAudioStream = useCallback(() => recorder.getStream(), [recorder]);
 
   const subscribe = useCallback(
     (onStoreChange: () => void) => core.on("state", onStoreChange),
@@ -77,5 +80,6 @@ export function usePersonalLog(): UsePersonalLog {
     supported: core.isTranscriptionSupported(),
     playbackSrc,
     finishedLog,
+    getAudioStream,
   };
 }

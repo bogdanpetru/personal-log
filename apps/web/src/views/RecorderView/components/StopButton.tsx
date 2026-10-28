@@ -11,9 +11,11 @@ export function StopButton({ onStop }: StopButtonProps) {
       type="button"
       aria-label="Stop recording"
       onClick={onStop}
-      className="h-10 cursor-pointer rounded-full border border-transparent bg-record px-4 text-white transition-colors hover:bg-record-hover"
+      variant="destructive"
+      size="icon-lg"
+      className="size-12"
     >
-      <Square aria-hidden />
+      <Square aria-hidden className="size-5" />
     </Button>
   );
 }

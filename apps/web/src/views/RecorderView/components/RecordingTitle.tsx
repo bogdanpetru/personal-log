@@ -55,9 +55,9 @@ export function RecordingTitle({ title, onCommit }: RecordingTitleProps) {
   return (
     <Text
       as="h1"
-      size="title"
+      size="sm"
       onClick={() => setEditing(true)}
-      className="cursor-pointer self-start transition-opacity hover:opacity-70"
+      className="cursor-pointer transition-opacity hover:opacity-70"
     >
       {title}
     </Text>

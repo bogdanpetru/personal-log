@@ -13,9 +13,11 @@ export function RecordButton({ supported, onToggle }: RecordButtonProps) {
       aria-label="Start recording"
       disabled={!supported}
       onClick={onToggle}
-      className="flex h-[120px] w-[120px] cursor-pointer items-center justify-center rounded-full bg-record transition-colors hover:bg-record-hover disabled:cursor-not-allowed disabled:opacity-40"
+      variant="default"
+      size="icon"
+      className="size-[120px]"
     >
-      <Mic aria-hidden className="size-10 text-white" />
+      <Mic aria-hidden className="size-10" />
     </Button>
   );
 }
