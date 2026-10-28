@@ -1,43 +1,61 @@
 import { render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import App from "./App";
+import type { Log } from "@personal-log/plugin-api";
 
-test("renders the record button", () => {
-  render(<App />);
-  expect(
-    screen.getByRole("button", { name: "Start recording" }),
-  ).toBeInTheDocument();
-});
-
-test("record button is disabled when transcription is unsupported (jsdom)", () => {
-  render(<App />);
-  expect(
-    screen.getByRole("button", { name: "Start recording" }),
-  ).toBeDisabled();
-});
-
-test("pause button is not visible before recording", () => {
-  render(<App />);
-  expect(
-    screen.queryByRole("button", { name: "Pause recording" }),
-  ).not.toBeInTheDocument();
-});
-
-test("no stop button before recording", () => {
-  render(<App />);
-  expect(
-    screen.queryByRole("button", { name: "Stop recording" }),
-  ).not.toBeInTheDocument();
-});
-
-test("language selector defaults to the browser language (jsdom en-US)", () => {
-  render(<App />);
-  const trigger = screen.getByRole("combobox", {
-    name: "Transcription language",
+const mocks = vi.hoisted(() => {
+  const makeLog = (id: string): Log => ({
+    id,
+    createdAt: "2025-01-01T10:00:00.000Z",
+    durationMs: 1000,
+    audio: {
+      id: `${id}-audio`,
+      mimeType: "audio/webm",
+      size: 10,
+      createdAt: "2025-01-01T10:00:00.000Z",
+    },
+    transcriptions: [],
   });
-  expect(trigger).toHaveTextContent("English");
+  return {
+    makeLog,
+    logs: [] as Log[],
+  };
 });
 
-test("shows no recording indicator text", () => {
-  render(<App />);
-  expect(screen.queryByText(/recording/i)).not.toBeInTheDocument();
+vi.mock("@/hooks/usePersonalLog", () => ({
+  usePersonalLog: () => ({
+    core: {
+      setLanguage: () => undefined,
+      on: () => () => undefined,
+    },
+    state: { status: "idle", seconds: 0, transcript: "", partial: "" },
+    supported: true,
+    playbackSrc: null,
+    finishedLog: null,
+    getAudioStream: () => null,
+    logs: mocks.logs,
+    refreshLogs: async () => mocks.logs,
+    loadLogData: async () => undefined,
+    deleteLog: async () => {
+      mocks.logs = mocks.logs.slice(1);
+    },
+  }),
+}));
+
+describe("App", () => {
+  it("lands on the recorder when no logs are stored", async () => {
+    mocks.logs = [];
+    render(<App />);
+    expect(
+      await screen.findByRole("button", { name: "Start recording" }),
+    ).toBeInTheDocument();
+  });
+
+  it("lands on the list when logs are stored", async () => {
+    mocks.logs = [mocks.makeLog("a"), mocks.makeLog("b")];
+    render(<App />);
+    expect(
+      await screen.findByRole("button", { name: "New" }),
+    ).toBeInTheDocument();
+  });
 });

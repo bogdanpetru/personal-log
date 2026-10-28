@@ -38,21 +38,23 @@ After it reports, verify independently — never report ticket results from the 
 
 1. Read the plan file. Find the first unchecked step (`[ ]`) — checked (`[x]`) steps are done; don't repeat them. This makes the plan resumable after any interruption.
 2. Execute steps in order. For each step:
-   1. Run the commands / write the files exactly as the plan specifies.
-   2. Verify the step's **Done when** check actually passes.
-   3. Mark the step's checkbox `[x]` in the plan file.
+   1. Read the existing code the step touches before changing it.
+   2. Implement the change as the step describes — the plan names the files, the components/props/functions, the behavior and the conventions; the actual code is yours to write (follow `AGENTS.md`: one file per named thing, barrels only re-export, no comments, `Text` for visible text).
+   3. Verify the step's **Done when** check actually passes.
+   4. Mark the step's checkbox `[x]` in the plan file.
 3. If a command fails:
    - Stop immediately. Do not continue, do not skip.
    - Report: the exact error output, which steps are done, which edits were already applied.
    - Propose fix options (running the tool's `--help` to understand flags is allowed).
    - Wait for the orchestrator (report back with the failure instead of retrying).
 4. If a command fails from toolchain drift (a flag or option no longer exists, a version changed), you may read the tool's `--help` and use the tool's own suggested alternative, then add a short note to that plan step recording the deviation. Anything beyond that: stop and report.
-5. For user-verification steps (preview/browser checks): start the server in the background (`nohup ... &`), verify what is verifiable via curl and HTTP status codes, and put the browser checklist in your report back to the orchestrator — you cannot reach the user.
-6. Never run `git commit` — commits require the user's explicit approval (repo rule, see `AGENTS.md`). When you reach the plan's commit step, stop before executing it, leave its checkbox unchecked, and put the exact commit command and message in your report; the orchestrator asks the user and runs it after approval.
-7. Finish with the report described in the orchestrator's task prompt.
+5. If a step is too vague to implement without inventing a product or design decision, stop and report the open question instead of choosing.
+6. For user-verification steps (preview/browser checks): start the server in the background (`nohup ... &`), verify what is verifiable via curl and HTTP status codes, and put the browser checklist in your report back to the orchestrator — you cannot reach the user.
+7. Never run `git commit` — commits require the user's explicit approval (repo rule, see `AGENTS.md`). When you reach the plan's commit step, stop before executing it, leave its checkbox unchecked, and put the exact commit command and message in your report; the orchestrator asks the user and runs it after approval.
+8. Finish with the report described in the orchestrator's task prompt.
 
 ## Rules
 
 - Ground rules written in the plan override these defaults where they differ.
-- File contents from the plan are written as-is, as plain text.
+- The plan describes what and how; the implementation is yours. Match the plan's named identifiers exactly (file paths, export/prop names, commands) — those are the contract.
 - Substitute the plan's commands only on toolchain drift (rule 4).

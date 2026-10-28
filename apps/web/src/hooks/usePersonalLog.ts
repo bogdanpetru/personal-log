@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import { PersonalLog } from "@personal-log/core";
 import type { PersonalLogState } from "@personal-log/core";
-import type { Log } from "@personal-log/plugin-api";
+import type { Log, LogId } from "@personal-log/plugin-api";
 import { MediaRecorderRecorder } from "@personal-log/plugin-recorder-media";
 import { OpfsStoragePlugin } from "@personal-log/plugin-storage-opfs";
 import { NativeSpeechPlugin } from "@personal-log/plugin-transcription-native";
@@ -13,6 +13,10 @@ interface UsePersonalLog {
   playbackSrc: string | null;
   finishedLog: Log | null;
   getAudioStream: () => MediaStream | null;
+  logs: Log[];
+  refreshLogs: () => Promise<Log[]>;
+  loadLogData: (logId: LogId) => Promise<{ log: Log; url: string } | undefined>;
+  deleteLog: (logId: LogId) => Promise<void>;
 }
 
 export function usePersonalLog(): UsePersonalLog {
@@ -36,6 +40,41 @@ export function usePersonalLog(): UsePersonalLog {
 
   const [playbackSrc, setPlaybackSrc] = useState<string | null>(null);
   const [finishedLog, setFinishedLog] = useState<Log | null>(null);
+  const [logs, setLogs] = useState<Log[]>([]);
+
+  const refreshLogs = useCallback(async () => {
+    const next = await core.getLogs();
+    setLogs(next);
+    return next;
+  }, [core]);
+
+  const loadLogData = useCallback(
+    async (logId: LogId) => {
+      const log = await core.getLog(logId);
+      const data = await core.getLogData(logId);
+      if (log === undefined || data === undefined) {
+        return undefined;
+      }
+      setFinishedLog(log);
+      const url = URL.createObjectURL(data.audio);
+      setPlaybackSrc((prev) => {
+        if (prev !== null) {
+          URL.revokeObjectURL(prev);
+        }
+        return url;
+      });
+      return { log, url };
+    },
+    [core],
+  );
+
+  const deleteLog = useCallback(
+    async (logId: LogId) => {
+      await core.deleteLog(logId);
+      setLogs((prev) => prev.filter((log) => log.id !== logId));
+    },
+    [core],
+  );
 
   useEffect(() => {
     let url: string | null = null;
@@ -81,5 +120,9 @@ export function usePersonalLog(): UsePersonalLog {
     playbackSrc,
     finishedLog,
     getAudioStream,
+    logs,
+    refreshLogs,
+    loadLogData,
+    deleteLog,
   };
 }

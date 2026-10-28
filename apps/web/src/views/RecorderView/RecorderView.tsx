@@ -1,20 +1,27 @@
 import { useEffect, useState } from "react";
+import { ArrowLeft } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { Badge } from "@/components/Badge";
+import { Button } from "@/components/Button";
 import { LanguageSelector } from "@/views/components/LanguageSelector";
+import { Transcript } from "@/views/components/Transcript";
 import { PauseResumeButton } from "@/views/RecorderView/components/PauseResumeButton";
 import { RecordButton } from "@/views/RecorderView/components/RecordButton";
 import { RecordingTitle } from "@/views/RecorderView/components/RecordingTitle";
 import { StopButton } from "@/views/RecorderView/components/StopButton";
 import { Timer } from "@/views/RecorderView/components/Timer";
-import { Transcript } from "@/views/RecorderView/components/Transcript";
 import { Waveform } from "@/views/RecorderView/components/Waveform";
 import { useAudioLevel } from "@/hooks/useAudioLevel";
 import { usePersonalLog } from "@/hooks/usePersonalLog";
 import { PlaybackView } from "@/views/PlaybackView";
 import { LANGUAGES, defaultLanguage } from "@/lib/languages";
 
-export function RecorderView() {
+interface RecorderViewProps {
+  onRecorded?: () => void;
+  onBack?: () => void;
+}
+
+export function RecorderView({ onRecorded, onBack }: RecorderViewProps) {
   const { core, state, supported, playbackSrc, finishedLog, getAudioStream } =
     usePersonalLog();
   const [language, setLanguage] = useState(defaultLanguage());
@@ -24,6 +31,21 @@ export function RecorderView() {
   useEffect(() => {
     core.setLanguage(language);
   }, [core, language]);
+
+  useEffect(() => {
+    if (onRecorded === undefined) {
+      return;
+    }
+    return core.on("recorded", onRecorded);
+  }, [core, onRecorded]);
+
+  const header =
+    onBack === undefined ? undefined : (
+      <Button type="button" variant="ghost" size="sm" onClick={onBack}>
+        <ArrowLeft aria-hidden className="size-4" />
+        Back
+      </Button>
+    );
 
   const recording = state.status !== "idle";
   const paused = state.status === "paused";
@@ -73,7 +95,7 @@ export function RecorderView() {
   );
 
   return (
-    <AppShell>
+    <AppShell header={header}>
       {recording ? (
         <div className="flex w-full flex-col items-center gap-4">
           <Waveform levels={levels} className="mb-4 h-20 w-full text-foreground" />
