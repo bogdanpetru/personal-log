@@ -5,11 +5,13 @@ import { Button } from "@/components/Button";
 import { Text } from "@/components/Text";
 import { PlaybackView } from "@/views/PlaybackView";
 import { Transcript } from "@/views/components/Transcript";
+import { ShareButton } from "@/views/LogView/components/ShareButton";
 import { LANGUAGES } from "@/lib/languages";
 import type { Log } from "@personal-log/plugin-api";
 
 interface LogViewProps {
   log: Log;
+  audio: Blob;
   audioUrl: string;
   onBack: () => void;
 }
@@ -25,7 +27,7 @@ function formatTitle(log: Log): string {
   });
 }
 
-export function LogView({ log, audioUrl, onBack }: LogViewProps) {
+export function LogView({ log, audio, audioUrl, onBack }: LogViewProps) {
   const language = log.transcriptions[0]?.language;
   const header = useMemo(
     () => (
@@ -34,15 +36,18 @@ export function LogView({ log, audioUrl, onBack }: LogViewProps) {
           <ArrowLeft aria-hidden className="size-4" />
           Back
         </Button>
-        {language !== undefined && (
-          <Text as="span" size="sm" muted>
-            {LANGUAGES.find((option) => option.code === language)?.label ??
-              language}
-          </Text>
-        )}
+        <div className="flex items-center gap-1">
+          <ShareButton log={log} audio={audio} audioUrl={audioUrl} />
+          {language !== undefined && (
+            <Text as="span" size="sm" muted>
+              {LANGUAGES.find((option) => option.code === language)?.label ??
+                language}
+            </Text>
+          )}
+        </div>
       </>
     ),
-    [language, onBack],
+    [language, log, audio, audioUrl, onBack],
   );
 
   return (

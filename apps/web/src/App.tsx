@@ -17,6 +17,7 @@ export default function App() {
     deleteLog,
     finishedLog,
     playbackSrc,
+    playbackAudio,
   } = usePersonalLog();
   const [mode, setMode] = useState<AppMode>("list");
 
@@ -69,10 +70,16 @@ export default function App() {
     );
   }
 
-  if (mode === "view" && finishedLog !== null && playbackSrc !== null) {
+  if (
+    mode === "view" &&
+    finishedLog !== null &&
+    playbackSrc !== null &&
+    playbackAudio !== null
+  ) {
     return (
       <LogView
         log={finishedLog}
+        audio={playbackAudio}
         audioUrl={playbackSrc}
         onBack={handleBackToList}
       />

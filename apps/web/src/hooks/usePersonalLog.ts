@@ -11,6 +11,7 @@ interface UsePersonalLog {
   state: PersonalLogState;
   supported: boolean;
   playbackSrc: string | null;
+  playbackAudio: Blob | null;
   finishedLog: Log | null;
   getAudioStream: () => MediaStream | null;
   logs: Log[];
@@ -39,6 +40,7 @@ export function usePersonalLog(): UsePersonalLog {
   const state = useSyncExternalStore(subscribe, getSnapshot);
 
   const [playbackSrc, setPlaybackSrc] = useState<string | null>(null);
+  const [playbackAudio, setPlaybackAudio] = useState<Blob | null>(null);
   const [finishedLog, setFinishedLog] = useState<Log | null>(null);
   const [logs, setLogs] = useState<Log[]>([]);
 
@@ -57,6 +59,7 @@ export function usePersonalLog(): UsePersonalLog {
       }
       setFinishedLog(log);
       const url = URL.createObjectURL(data.audio);
+      setPlaybackAudio(data.audio);
       setPlaybackSrc((prev) => {
         if (prev !== null) {
           URL.revokeObjectURL(prev);
@@ -80,6 +83,7 @@ export function usePersonalLog(): UsePersonalLog {
     let url: string | null = null;
     const show = (blob: Blob) => {
       url = URL.createObjectURL(blob);
+      setPlaybackAudio(blob);
       setPlaybackSrc(url);
     };
     const hide = () => {
@@ -87,6 +91,7 @@ export function usePersonalLog(): UsePersonalLog {
         URL.revokeObjectURL(url);
       }
       url = null;
+      setPlaybackAudio(null);
       setPlaybackSrc(null);
     };
     const offRecorded = core.on("recorded", (log, data) => {
@@ -118,6 +123,7 @@ export function usePersonalLog(): UsePersonalLog {
     state,
     supported: core.isTranscriptionSupported(),
     playbackSrc,
+    playbackAudio,
     finishedLog,
     getAudioStream,
     logs,

@@ -31,6 +31,7 @@ vi.mock("@/hooks/usePersonalLog", () => ({
     state: { status: "idle", seconds: 0, transcript: "", partial: "" },
     supported: true,
     playbackSrc: null,
+    playbackAudio: null,
     finishedLog: null,
     getAudioStream: () => null,
     logs: mocks.logs,
