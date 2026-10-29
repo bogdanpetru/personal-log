@@ -14,7 +14,7 @@ interface LoadedLog {
 
 export function LogViewRoute() {
   const { logId } = useParams();
-  const { loadLogData } = usePersonalLog();
+  const { loadLogData, renameLog } = usePersonalLog();
   const [prevLogId, setPrevLogId] = useState(logId);
   const [loaded, setLoaded] = useState<LoadedLog | null>(null);
   const [missing, setMissing] = useState(false);
@@ -57,7 +57,17 @@ export function LogViewRoute() {
     return null;
   }
 
+  const rename = (title: string) => {
+    void renameLog(loaded.log.id, title);
+    setLoaded({ ...loaded, log: { ...loaded.log, title } });
+  };
+
   return (
-    <LogView log={loaded.log} audio={loaded.audio} audioUrl={loaded.url} />
+    <LogView
+      log={loaded.log}
+      audio={loaded.audio}
+      audioUrl={loaded.url}
+      onRename={rename}
+    />
   );
 }

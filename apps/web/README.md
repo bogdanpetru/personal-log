@@ -7,7 +7,7 @@ React 19 + TypeScript + Vite + Tailwind v4. Single-page recorder UI.
 - `components/` — the **pure UI lib**: simple, reusable building blocks only
   (props in → JSX out; no core access, no app-level data, no business logic),
   one simple component per file. It holds the shadcn/registry primitives
-  (`Button`, `Input`, `Badge`, `Progress`, `Popover`, `Command`, `Combobox`),
+  (`Button`, `Input`, `Badge`, `Progress`, `Slider`, `Popover`, `Command`, `Combobox`),
   the authored primitives (`Text`, `Audio`) and the layout-only `AppShell`.
   Flat — no `ui/` subfolder.
 - `views/<View>/` — a business-logic screen: an `index.ts` barrel, a
@@ -30,7 +30,7 @@ come from `Intl.DisplayNames`).
 ## Rules
 
 1. Only the lib's shadcn/registry primitive files (`Text`, `Button`, `Input`,
-   `Badge`, `Progress`, `Popover`, `Command`, `Combobox`, `Audio`) render raw HTML
+   `Badge`, `Progress`, `Slider`, `Popover`, `Command`, `Combobox`, `Audio`) render raw HTML
    primitives. `<p>`, `<span>`, `<button>`, `<input>`, `<ul>`, `<li>`,
    `<audio>` directly are forbidden anywhere else.
 2. Visible text always goes through `Text` (`size`, `muted`, `as`).
@@ -51,7 +51,7 @@ come from `Intl.DisplayNames`).
 ## Guard
 
 ```bash
-rg -n '<(button|input|p|span|ul|li|audio)[ >]' src -g '*.tsx' -g '!src/components/{Text,Button,Input,Badge,Progress,Popover,Command,Combobox,Audio}.tsx'
+rg -n '<(button|input|p|span|ul|li|audio)[ >]' src -g '*.tsx' -g '!src/components/{Text,Button,Input,Badge,Progress,Slider,Popover,Command,Combobox,Audio}.tsx'
 ```
 
 should print nothing.

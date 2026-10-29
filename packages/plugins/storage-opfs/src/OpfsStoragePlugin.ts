@@ -83,13 +83,7 @@ export class OpfsStoragePlugin implements StoragePlugin {
 
   async save(log: Log, data: LogData): Promise<void> {
     const dir = await this.logDir(log.id, true);
-
-    const metadataHandle = await dir.getFileHandle(METADATA_FILE, {
-      create: true,
-    });
-    const metadataWritable = await metadataHandle.createWritable();
-    await metadataWritable.write(JSON.stringify(log));
-    await metadataWritable.close();
+    await this.writeMetadata(dir, log);
 
     const audioHandle = await dir.getFileHandle(
       recordingFile(log.audio.mimeType),
@@ -98,6 +92,11 @@ export class OpfsStoragePlugin implements StoragePlugin {
     const audioWritable = await audioHandle.createWritable();
     await audioWritable.write(data.audio);
     await audioWritable.close();
+  }
+
+  async updateMetadata(log: Log): Promise<void> {
+    const dir = await this.logDir(log.id, false);
+    await this.writeMetadata(dir, log);
   }
 
   async delete(logId: LogId): Promise<void> {
@@ -153,6 +152,16 @@ export class OpfsStoragePlugin implements StoragePlugin {
     const handle = await dir.getFileHandle(METADATA_FILE);
     const file = await handle.getFile();
     return JSON.parse(await file.text()) as Log;
+  }
+
+  private async writeMetadata(
+    dir: FileSystemDirectoryHandle,
+    log: Log,
+  ): Promise<void> {
+    const handle = await dir.getFileHandle(METADATA_FILE, { create: true });
+    const writable = await handle.createWritable();
+    await writable.write(JSON.stringify(log));
+    await writable.close();
   }
 }
 

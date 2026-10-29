@@ -11,6 +11,7 @@ export type LogId = string;
  */
 export interface Log {
   id: LogId;
+  title?: string;
   createdAt: string;
   durationMs: number;
   audio: AudioArtifact;

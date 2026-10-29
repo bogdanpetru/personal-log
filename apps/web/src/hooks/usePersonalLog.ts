@@ -20,6 +20,7 @@ interface UsePersonalLog {
     logId: LogId,
   ) => Promise<{ log: Log; audio: Blob; url: string } | undefined>;
   deleteLog: (logId: LogId) => Promise<void>;
+  renameLog: (logId: LogId, title: string) => Promise<void>;
 }
 
 const recorder = new MediaRecorderRecorder();
@@ -76,6 +77,19 @@ export function usePersonalLog(): UsePersonalLog {
     setLogs((prev) => prev.filter((log) => log.id !== logId));
   }, []);
 
+  const renameLog = useCallback(async (logId: LogId, title: string) => {
+    const renamed = await core.renameLog(logId, title);
+    if (renamed === undefined) {
+      return;
+    }
+    setLogs((prev) =>
+      prev.map((log) => (log.id === renamed.id ? renamed : log)),
+    );
+    setFinishedLog((prev) =>
+      prev?.id === renamed.id ? renamed : prev,
+    );
+  }, []);
+
   useEffect(() => {
     let url: string | null = null;
     const show = (blob: Blob) => {
@@ -127,5 +141,6 @@ export function usePersonalLog(): UsePersonalLog {
     refreshLogs,
     loadLogData,
     deleteLog,
+    renameLog,
   };
 }

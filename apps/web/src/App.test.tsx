@@ -40,6 +40,7 @@ vi.mock("@/hooks/usePersonalLog", () => ({
   usePersonalLog: () => ({
     core: {
       setLanguage: () => undefined,
+      setTitle: () => undefined,
       on: () => () => undefined,
     },
     state: { status: "idle", seconds: 0, transcript: "", partial: "" },
@@ -59,6 +60,7 @@ vi.mock("@/hooks/usePersonalLog", () => ({
     deleteLog: async () => {
       mocks.logs = mocks.logs.slice(1);
     },
+    renameLog: async () => undefined,
   }),
 }));
 

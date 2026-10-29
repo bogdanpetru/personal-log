@@ -117,11 +117,14 @@ class FakeStorage implements StoragePlugin {
     this.saveCalls.push({ log, data });
   }
 
+  async updateMetadata(log: Log): Promise<void> {
+    this.logs.set(log.id, log);
+  }
+
   async delete(logId: LogId): Promise<void> {
     this.logs.delete(logId);
     this.data.delete(logId);
   }
-
   async dispose(): Promise<void> {
     this.logs.clear();
     this.data.clear();
@@ -320,6 +323,35 @@ test("commands are guarded no-ops out of turn", async () => {
   core.pause();
   expect(recorder.paused).toBe(1);
   await core.stop();
+});
+
+test("a title set before stop is stored with the log", async () => {
+  const { core, transcriber } = setup();
+  core.setTitle("Morning notes");
+  await core.record();
+  transcriber.onFinal!("hello");
+  await core.stop();
+  const [log] = await core.getLogs();
+  expect(log?.title).toBe("Morning notes");
+});
+
+test("renameLog updates the stored title and returns the log", async () => {
+  const { core, transcriber } = setup();
+  await core.record();
+  transcriber.onFinal!("hello");
+  await core.stop();
+  const [log] = await core.getLogs();
+  const renamed = await core.renameLog(log!.id, "Renamed");
+  expect(renamed?.title).toBe("Renamed");
+  expect((await core.getLog(log!.id))?.title).toBe("Renamed");
+  expect((await core.getLog(log!.id))?.transcriptions).toEqual(
+    log!.transcriptions,
+  );
+});
+
+test("renameLog of a missing log changes nothing", async () => {
+  const { core } = setup();
+  expect(await core.renameLog("missing", "Renamed")).toBeUndefined();
 });
 
 test("deleteLog removes the log from storage", async () => {

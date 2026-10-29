@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Link, Navigate, Route, Routes, useNavigate } from "react-router";
+import { Link, Navigate, Route, Routes, useLocation, useNavigate } from "react-router";
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/Button";
 import { usePersonalLog } from "@/hooks/usePersonalLog";
@@ -11,11 +11,12 @@ import type { LogId } from "@personal-log/plugin-api";
 export default function App() {
   const { core, logs, refreshLogs, deleteLog } = usePersonalLog();
   const navigate = useNavigate();
+  const location = useLocation();
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     void refreshLogs().finally(() => setLoaded(true));
-  }, [refreshLogs]);
+  }, [location.pathname, refreshLogs]);
 
   useEffect(
     () =>

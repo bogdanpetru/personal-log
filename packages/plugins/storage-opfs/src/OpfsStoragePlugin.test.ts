@@ -162,6 +162,18 @@ test("save and get roundtrip the metadata", async () => {
   expect((await storage.get("a"))!.audio).not.toHaveProperty("blob");
 });
 
+test("updateMetadata rewrites the metadata and keeps the audio", async () => {
+  const storage = new OpfsStoragePlugin();
+  const log = makeLog("a", "2026-01-01T00:00:00Z", "hello");
+  await storage.save(log, makeData(log, "hello"));
+
+  await storage.updateMetadata({ ...log, title: "Renamed" });
+
+  expect((await storage.get("a"))?.title).toBe("Renamed");
+  expect(await (await storage.getLogData("a"))!.audio.text()).toBe("hello");
+});
+
+
 test("the directory holds metadata.json and the recording file", async () => {
   const storage = new OpfsStoragePlugin();
   const log = makeLog("a", "2026-01-01T00:00:00Z", "hello");

@@ -18,6 +18,7 @@ export interface StoragePlugin {
   /** The heavy payload: the log's audio. */
   getLogData(logId: LogId): Promise<LogData | undefined>;
   save(log: Log, data: LogData): Promise<void>;
+  updateMetadata(log: Log): Promise<void>;
   delete(logId: LogId): Promise<void>;
   dispose(): Promise<void>;
 }

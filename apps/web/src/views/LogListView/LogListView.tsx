@@ -13,22 +13,12 @@ import {
 } from "@/components/AlertDialog";
 import { Button } from "@/components/Button";
 import { Text } from "@/components/Text";
+import { logTitle } from "@/lib/logTitle";
 import type { Log, LogId } from "@personal-log/plugin-api";
 
 interface LogListViewProps {
   logs: Log[];
   onDelete: (logId: LogId) => Promise<void>;
-}
-
-function formatTitle(log: Log): string {
-  return new Date(log.createdAt).toLocaleString("sv", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  });
 }
 
 interface DayGroup {
@@ -85,7 +75,7 @@ export function LogListView({ logs, onDelete }: LogListViewProps) {
                 >
                   <Link to={`/records/${log.id}`} className="py-3">
                     <Text as="span" size="base" className="text-white">
-                      {formatTitle(log)}
+                      {logTitle(log)}
                     </Text>
                   </Link>
                   <Button

@@ -57,6 +57,7 @@ export class PersonalLog {
   // Language for the next recording; captured when a session starts so the
   // stored artifact names what was actually spoken.
   private language: string | undefined;
+  private title: string | undefined;
   private activeLanguage: string | undefined;
   // Milliseconds of active recording before the current unbroken run.
   private elapsedMs = 0;
@@ -276,10 +277,12 @@ export class PersonalLog {
     const durationMs = this.elapsedMs;
     const transcript = this.state.transcript;
     const language = this.activeLanguage;
+    const title = this.title;
 
     this.base = "";
     this.elapsedMs = 0;
     this.activeLanguage = undefined;
+    this.title = undefined;
     this.patchState({
       status: "idle",
       seconds: 0,
@@ -294,7 +297,13 @@ export class PersonalLog {
       return;
     }
 
-    const { log, data } = this.buildLog(recording, durationMs, transcript, language);
+    const { log, data } = this.buildLog(
+      recording,
+      durationMs,
+      transcript,
+      language,
+      title,
+    );
     try {
       await this.storage?.save(log, data);
     } catch (error) {
@@ -311,6 +320,10 @@ export class PersonalLog {
   /** Sets the language used by the next recording. */
   setLanguage(language: string | undefined): void {
     this.language = language;
+  }
+
+  setTitle(title: string): void {
+    this.title = title;
   }
 
   isTranscriptionSupported(): boolean {
@@ -336,6 +349,16 @@ export class PersonalLog {
     await this.storage.delete(logId);
   }
 
+  async renameLog(logId: LogId, title: string): Promise<Log | undefined> {
+    const log = await this.getLog(logId);
+    if (log === undefined || this.storage === undefined) {
+      return undefined;
+    }
+    const renamed: Log = { ...log, title };
+    await this.storage.updateMetadata(renamed);
+    return renamed;
+  }
+
   dispose(): void {
     this.endSession();
     this.stopTimer();
@@ -350,11 +373,13 @@ export class PersonalLog {
     durationMs: number,
     transcript: string,
     language: string | undefined,
+    title: string | undefined,
   ): { log: Log; data: LogData } {
     const logId = crypto.randomUUID();
     const createdAt = new Date().toISOString();
     const log: Log = {
       id: logId,
+      title,
       createdAt,
       durationMs,
       audio: {

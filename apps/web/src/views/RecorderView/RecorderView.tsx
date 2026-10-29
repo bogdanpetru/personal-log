@@ -5,10 +5,10 @@ import { AppShell } from "@/components/AppShell";
 import { Badge } from "@/components/Badge";
 import { Button } from "@/components/Button";
 import { LanguageSelector } from "@/views/components/LanguageSelector";
+import { RecordingTitle } from "@/views/components/RecordingTitle";
 import { Transcript } from "@/views/components/Transcript";
 import { PauseResumeButton } from "@/views/RecorderView/components/PauseResumeButton";
 import { RecordButton } from "@/views/RecorderView/components/RecordButton";
-import { RecordingTitle } from "@/views/RecorderView/components/RecordingTitle";
 import { StopButton } from "@/views/RecorderView/components/StopButton";
 import { Timer } from "@/views/RecorderView/components/Timer";
 import { Waveform } from "@/views/RecorderView/components/Waveform";
@@ -16,10 +16,18 @@ import { useAudioLevel } from "@/hooks/useAudioLevel";
 import { usePersonalLog } from "@/hooks/usePersonalLog";
 import { PlaybackView } from "@/views/PlaybackView";
 import { LANGUAGES, defaultLanguage } from "@/lib/languages";
+import { logTitle } from "@/lib/logTitle";
 
 export function RecorderView() {
-  const { core, state, supported, playbackSrc, finishedLog, getAudioStream } =
-    usePersonalLog();
+  const {
+    core,
+    state,
+    supported,
+    playbackSrc,
+    finishedLog,
+    getAudioStream,
+    renameLog,
+  } = usePersonalLog();
   const [language, setLanguage] = useState(defaultLanguage());
   const [title, setTitle] = useState("");
   const levels = useAudioLevel(state.status === "recording", getAudioStream);
@@ -41,16 +49,16 @@ export function RecorderView() {
   const paused = state.status === "paused";
 
   const start = () => {
-    setTitle(
-      new Date().toLocaleString("sv", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-      })
-    );
+    const next = new Date().toLocaleString("sv", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+    setTitle(next);
+    core.setTitle(next);
     void core.record().catch(() => undefined);
   };
 
@@ -67,8 +75,7 @@ export function RecorderView() {
   };
 
   const playingBack = playbackSrc !== null;
-  const viewLanguage =
-    finishedLog?.transcriptions[0]?.language ?? language;
+  const viewLanguage = finishedLog?.transcriptions[0]?.language ?? language;
   const viewLanguageLabel =
     LANGUAGES.find((option) => option.code === viewLanguage)?.label ??
     viewLanguage;
@@ -77,9 +84,24 @@ export function RecorderView() {
     : playingBack
       ? (finishedLog?.transcriptions[0]?.text ?? "")
       : "";
+
+  const commitTitle = (next: string) => {
+    setTitle(next);
+    if (playingBack && finishedLog !== null) {
+      void renameLog(finishedLog.id, next);
+    } else {
+      core.setTitle(next);
+    }
+  };
+
   const titleRow = (
     <div className="flex w-full items-center justify-between gap-5 self-start">
-      <RecordingTitle title={title} onCommit={setTitle} />
+      <RecordingTitle
+        title={
+          playingBack && finishedLog !== null ? logTitle(finishedLog) : title
+        }
+        onCommit={commitTitle}
+      />
       <Badge variant="secondary">{viewLanguageLabel}</Badge>
     </div>
   );
@@ -98,7 +120,11 @@ export function RecorderView() {
         </div>
       ) : playingBack ? (
         <>
-          <PlaybackView key={playbackSrc} src={playbackSrc} />
+          <PlaybackView
+            key={playbackSrc}
+            src={playbackSrc}
+            durationMs={finishedLog?.durationMs}
+          />
           {titleRow}
         </>
       ) : (

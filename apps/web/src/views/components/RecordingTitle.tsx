@@ -20,6 +20,11 @@ export function RecordingTitle({ title, onCommit }: RecordingTitleProps) {
     inputRef.current?.select();
   }, [editing]);
 
+  const startEditing = () => {
+    setDraft(title);
+    setEditing(true);
+  };
+
   const commit = () => {
     setEditing(false);
     const trimmed = draft.trim();
@@ -56,7 +61,7 @@ export function RecordingTitle({ title, onCommit }: RecordingTitleProps) {
     <Text
       as="h1"
       size="sm"
-      onClick={() => setEditing(true)}
+      onClick={startEditing}
       className="cursor-pointer transition-opacity hover:opacity-70"
     >
       {title}
