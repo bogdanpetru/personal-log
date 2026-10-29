@@ -8,6 +8,7 @@ import { LogListView } from "@/views/LogListView";
 import { LogViewRoute } from "@/views/LogView";
 import { RecorderView } from "@/views/RecorderView";
 import { SettingsView } from "@/views/SettingsView";
+import { ThemeSwitch } from "@/views/components/ThemeSwitch";
 import type { LogId } from "@personal-log/plugin-api";
 
 export default function App() {
@@ -63,12 +64,15 @@ export default function App() {
   );
 
   return (
-    <Routes>
-      <Route path="/" element={<Navigate to="/records" replace />} />
-      <Route path="/records" element={list} />
-      <Route path="/record" element={<RecorderView />} />
-      <Route path="/records/:logId" element={<LogViewRoute />} />
-      <Route path="/settings" element={<SettingsView />} />
-    </Routes>
+    <>
+      <Routes>
+        <Route path="/" element={<Navigate to="/records" replace />} />
+        <Route path="/records" element={list} />
+        <Route path="/record" element={<RecorderView />} />
+        <Route path="/records/:logId" element={<LogViewRoute />} />
+        <Route path="/settings" element={<SettingsView />} />
+      </Routes>
+      <ThemeSwitch />
+    </>
   );
 }

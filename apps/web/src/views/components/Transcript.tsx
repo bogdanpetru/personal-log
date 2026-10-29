@@ -29,7 +29,7 @@ export function Transcript({
       ref={panelRef}
       className="min-h-0 w-full flex-1 overflow-y-auto text-left"
     >
-      <Text className="whitespace-pre-wrap text-white">
+      <Text className="whitespace-pre-wrap text-foreground">
         {transcript}
         {partial !== "" && (
           <Text as="span" muted>

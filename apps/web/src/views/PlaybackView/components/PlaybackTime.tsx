@@ -15,7 +15,7 @@ function formatSeconds(total: number): string {
 export function PlaybackTime({ currentTime, duration }: PlaybackTimeProps) {
   return (
     <div className="flex items-baseline gap-2 tabular-nums">
-      <Text as="span" size="display" className="text-white">
+      <Text as="span" size="display" className="text-foreground">
         {formatSeconds(currentTime)}
       </Text>
       <Text as="span" size="sm" muted>

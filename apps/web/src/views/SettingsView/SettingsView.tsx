@@ -11,11 +11,14 @@ import {
 } from "@/components/Select";
 import { Text } from "@/components/Text";
 import { useSettings } from "@/hooks/useSettings";
+import { useTheme } from "@/hooks/useTheme";
 import { AUDIO_FORMATS, isAudioFormatId } from "@/lib/audio/formats";
 import { LanguageSelector } from "@/views/components/LanguageSelector";
+import { ThemeSelector } from "@/views/SettingsView/components/ThemeSelector";
 
 export function SettingsView() {
   const { settings, updateSettings } = useSettings();
+  const { mode, setMode } = useTheme();
 
   const header = (
     <Button asChild variant="ghost" size="sm">
@@ -29,6 +32,16 @@ export function SettingsView() {
   return (
     <AppShell header={header}>
       <div className="flex w-full flex-col gap-8">
+        <section className="flex flex-col gap-2">
+          <Text as="h2" size="sm">
+            Theme
+          </Text>
+          <Text as="p" size="xs" muted>
+            Follow the system or pick a theme for this device.
+          </Text>
+          <ThemeSelector value={mode} onChange={setMode} />
+        </section>
+
         <section className="flex flex-col gap-2">
           <Text as="h2" size="sm">
             Default language

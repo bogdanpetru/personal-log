@@ -74,7 +74,7 @@ export function LogListView({ logs, onDelete }: LogListViewProps) {
                   className="group grid grid-cols-[1fr_auto] items-center"
                 >
                   <Link to={`/records/${log.id}`} className="py-3">
-                    <Text as="span" size="base" className="text-white">
+                    <Text as="span" size="base" className="text-foreground">
                       {logTitle(log)}
                     </Text>
                   </Link>

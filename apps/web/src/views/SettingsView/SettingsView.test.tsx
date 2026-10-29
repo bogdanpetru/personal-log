@@ -17,14 +17,23 @@ function renderSettings() {
 }
 
 describe("SettingsView", () => {
-  it("shows the default language and download format sections", () => {
+  it("shows the theme, language and download format sections", () => {
     renderSettings();
+    expect(
+      screen.getByRole("heading", { name: "Theme" }),
+    ).toBeInTheDocument();
     expect(
       screen.getByRole("heading", { name: "Default language" }),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("heading", { name: "Download format" }),
     ).toBeInTheDocument();
+  });
+
+  it("persists the chosen theme", () => {
+    renderSettings();
+    fireEvent.click(screen.getByRole("button", { name: "Dark" }));
+    expect(getSettings().theme).toBe("dark");
   });
 
   it("shows the stored download format", () => {

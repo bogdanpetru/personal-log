@@ -18,6 +18,7 @@ describe("settings", () => {
     expect(getSettings()).toEqual({
       language: defaultLanguage(),
       downloadFormat: "original",
+      theme: "system",
     });
   });
 
@@ -26,10 +27,12 @@ describe("settings", () => {
     expect(getSettings()).toEqual({
       language: "de-DE",
       downloadFormat: "mp3",
+      theme: "system",
     });
     expect(JSON.parse(localStorage.getItem(STORAGE_KEY)!)).toEqual({
       language: "de-DE",
       downloadFormat: "mp3",
+      theme: "system",
     });
   });
 
@@ -41,17 +44,19 @@ describe("settings", () => {
     expect(getSettings()).toEqual({
       language: "fr-FR",
       downloadFormat: "wav",
+      theme: "system",
     });
   });
 
   it("ignores invalid stored values", () => {
     localStorage.setItem(
       STORAGE_KEY,
-      JSON.stringify({ language: 42, downloadFormat: "flac" }),
+      JSON.stringify({ language: 42, downloadFormat: "flac", theme: "sepia" }),
     );
     expect(getSettings()).toEqual({
       language: defaultLanguage(),
       downloadFormat: "original",
+      theme: "system",
     });
   });
 

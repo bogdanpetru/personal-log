@@ -1,9 +1,11 @@
 import { isAudioFormatId, type AudioFormatId } from "./audio/formats";
 import { defaultLanguage } from "./languages";
+import { isThemeMode, type ThemeMode } from "./theme";
 
 export interface Settings {
   language: string;
   downloadFormat: AudioFormatId;
+  theme: ThemeMode;
 }
 
 const STORAGE_KEY = "personal-log:settings";
@@ -12,7 +14,11 @@ let snapshot: Settings | null = null;
 const listeners = new Set<() => void>();
 
 function fallback(): Settings {
-  return { language: defaultLanguage(), downloadFormat: "original" };
+  return {
+    language: defaultLanguage(),
+    downloadFormat: "original",
+    theme: "system",
+  };
 }
 
 function read(): Settings {
@@ -31,6 +37,10 @@ function read(): Settings {
         isAudioFormatId(parsed.downloadFormat)
           ? parsed.downloadFormat
           : defaults.downloadFormat,
+      theme:
+        typeof parsed.theme === "string" && isThemeMode(parsed.theme)
+          ? parsed.theme
+          : defaults.theme,
     };
   } catch {
     return defaults;

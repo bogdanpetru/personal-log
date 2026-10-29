@@ -16,7 +16,7 @@ export function Timer({ seconds }: TimerProps) {
       as="div"
       role="timer"
       size="display"
-      className="tabular-nums text-white"
+      className="tabular-nums text-foreground"
     >
       {format(seconds)}
     </Text>
