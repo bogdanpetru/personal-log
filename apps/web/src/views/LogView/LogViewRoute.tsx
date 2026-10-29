@@ -3,6 +3,7 @@ import { useParams } from "react-router";
 import { AppShell } from "@/components/AppShell";
 import { Text } from "@/components/Text";
 import { usePersonalLog } from "@/hooks/usePersonalLog";
+import { useTranslation } from "@/hooks/useTranslation";
 import { LogView } from "@/views/LogView/LogView";
 import type { Log } from "@personal-log/plugin-api";
 
@@ -15,6 +16,7 @@ interface LoadedLog {
 export function LogViewRoute() {
   const { logId } = useParams();
   const { loadLogData, renameLog } = usePersonalLog();
+  const { t } = useTranslation();
   const [prevLogId, setPrevLogId] = useState(logId);
   const [loaded, setLoaded] = useState<LoadedLog | null>(null);
   const [missing, setMissing] = useState(false);
@@ -48,7 +50,7 @@ export function LogViewRoute() {
   if (logId === undefined || missing) {
     return (
       <AppShell>
-        <Text as="p">Recording not found.</Text>
+        <Text as="p">{t("recorder.notFound")}</Text>
       </AppShell>
     );
   }

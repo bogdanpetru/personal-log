@@ -1,5 +1,6 @@
 import { Loader2, Share2 } from "lucide-react";
 import { Button } from "@/components/Button";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface ShareButtonProps {
   file: File;
@@ -16,6 +17,8 @@ function saveAsFile(file: File): void {
 }
 
 export function ShareButton({ file, busy = false }: ShareButtonProps) {
+  const { t } = useTranslation();
+
   const handleShare = () => {
     if (
       navigator.canShare === undefined ||
@@ -38,7 +41,7 @@ export function ShareButton({ file, busy = false }: ShareButtonProps) {
       type="button"
       variant="ghost"
       size="icon-sm"
-      aria-label="Share recording"
+      aria-label={t("log.share")}
       aria-busy={busy}
       disabled={busy}
       onClick={handleShare}

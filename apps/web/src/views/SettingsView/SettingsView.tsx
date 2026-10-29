@@ -12,19 +12,22 @@ import {
 import { Text } from "@/components/Text";
 import { useSettings } from "@/hooks/useSettings";
 import { useTheme } from "@/hooks/useTheme";
+import { useTranslation } from "@/hooks/useTranslation";
 import { AUDIO_FORMATS, isAudioFormatId } from "@/lib/audio/formats";
 import { LanguageSelector } from "@/views/components/LanguageSelector";
+import { AppLanguageSelector } from "@/views/SettingsView/components/AppLanguageSelector";
 import { ThemeSelector } from "@/views/SettingsView/components/ThemeSelector";
 
 export function SettingsView() {
   const { settings, updateSettings } = useSettings();
   const { mode, setMode } = useTheme();
+  const { t } = useTranslation();
 
   const header = (
     <Button asChild variant="ghost" size="sm">
       <Link to="/records">
         <ArrowLeft aria-hidden className="size-4" />
-        Back
+        {t("nav.back")}
       </Link>
     </Button>
   );
@@ -34,20 +37,33 @@ export function SettingsView() {
       <div className="flex w-full flex-col gap-8">
         <section className="flex flex-col gap-2">
           <Text as="h2" size="sm">
-            Theme
+            {t("settings.appLanguage")}
           </Text>
           <Text as="p" size="xs" muted>
-            Follow the system or pick a theme for this device.
+            {t("settings.appLanguageHint")}
+          </Text>
+          <AppLanguageSelector
+            value={settings.locale}
+            onChange={(locale) => updateSettings({ locale })}
+          />
+        </section>
+
+        <section className="flex flex-col gap-2">
+          <Text as="h2" size="sm">
+            {t("settings.theme")}
+          </Text>
+          <Text as="p" size="xs" muted>
+            {t("settings.themeHint")}
           </Text>
           <ThemeSelector value={mode} onChange={setMode} />
         </section>
 
         <section className="flex flex-col gap-2">
           <Text as="h2" size="sm">
-            Default language
+            {t("settings.transcriptionLanguage")}
           </Text>
           <Text as="p" size="xs" muted>
-            Used when starting a new recording.
+            {t("settings.transcriptionLanguageHint")}
           </Text>
           <LanguageSelector
             value={settings.language}
@@ -57,10 +73,10 @@ export function SettingsView() {
 
         <section className="flex flex-col gap-2">
           <Text as="h2" size="sm">
-            Download format
+            {t("settings.downloadFormat")}
           </Text>
           <Text as="p" size="xs" muted>
-            Used by the share button and by the format picker in view mode.
+            {t("settings.downloadFormatHint")}
           </Text>
           <Select
             value={settings.downloadFormat}
@@ -70,13 +86,18 @@ export function SettingsView() {
               }
             }}
           >
-            <SelectTrigger aria-label="Download format" className="w-48">
+            <SelectTrigger
+              aria-label={t("settings.downloadFormat")}
+              className="w-48"
+            >
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
               {AUDIO_FORMATS.map((format) => (
                 <SelectItem key={format.id} value={format.id}>
-                  {format.label}
+                  {format.id === "original"
+                    ? t("format.original")
+                    : format.label}
                 </SelectItem>
               ))}
             </SelectContent>

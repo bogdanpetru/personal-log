@@ -5,6 +5,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/Select";
+import { useTranslation } from "@/hooks/useTranslation";
 import {
   AUDIO_FORMATS,
   isAudioFormatId,
@@ -17,6 +18,8 @@ interface FormatSelectorProps {
 }
 
 export function FormatSelector({ value, onChange }: FormatSelectorProps) {
+  const { t } = useTranslation();
+
   return (
     <Select
       value={value}
@@ -26,13 +29,17 @@ export function FormatSelector({ value, onChange }: FormatSelectorProps) {
         }
       }}
     >
-      <SelectTrigger size="sm" aria-label="Download format" className="w-24">
+      <SelectTrigger
+        size="sm"
+        aria-label={t("log.format")}
+        className="w-24"
+      >
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
         {AUDIO_FORMATS.map((format) => (
           <SelectItem key={format.id} value={format.id}>
-            {format.label}
+            {format.id === "original" ? t("format.original") : format.label}
           </SelectItem>
         ))}
       </SelectContent>

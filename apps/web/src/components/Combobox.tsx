@@ -115,7 +115,7 @@ export function Combobox({
                   <Text as="span" size="xs" className="min-w-0 truncate">
                     {option.label}
                     {option.description !== undefined && (
-                      <Text as="span" size="xs" muted className="ml-2">
+                      <Text as="span" size="xs" muted className="ms-2">
                         {option.description}
                       </Text>
                     )}

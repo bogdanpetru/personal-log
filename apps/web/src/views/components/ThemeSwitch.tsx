@@ -1,7 +1,9 @@
 import { Monitor, Moon, Sun } from "lucide-react";
 import { Button } from "@/components/Button";
 import { useTheme } from "@/hooks/useTheme";
-import { nextThemeMode, THEME_LABELS, type ThemeMode } from "@/lib/theme";
+import { useTranslation } from "@/hooks/useTranslation";
+import { nextThemeMode, type ThemeMode } from "@/lib/theme";
+import type { MessageKey } from "@/lib/i18n/translate";
 
 const ICONS: Record<ThemeMode, typeof Sun> = {
   system: Monitor,
@@ -9,10 +11,20 @@ const ICONS: Record<ThemeMode, typeof Sun> = {
   dark: Moon,
 };
 
+const LABELS: Record<ThemeMode, MessageKey> = {
+  system: "theme.system",
+  light: "theme.light",
+  dark: "theme.dark",
+};
+
 export function ThemeSwitch() {
+  const { t } = useTranslation();
   const { mode, cycle } = useTheme();
   const Icon = ICONS[mode];
-  const label = `Theme: ${THEME_LABELS[mode]}. Switch to ${THEME_LABELS[nextThemeMode(mode)]}.`;
+  const label = t("theme.switch", {
+    current: t(LABELS[mode]),
+    next: t(LABELS[nextThemeMode(mode)]),
+  });
 
   return (
     <Button
@@ -22,7 +34,7 @@ export function ThemeSwitch() {
       aria-label={label}
       title={label}
       onClick={cycle}
-      className="bg-background/80 fixed right-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-50 rounded-full shadow-sm backdrop-blur"
+      className="bg-background/80 fixed end-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-50 rounded-full shadow-sm backdrop-blur"
     >
       <Icon aria-hidden />
     </Button>

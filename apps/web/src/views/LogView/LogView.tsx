@@ -7,6 +7,7 @@ import { Button } from "@/components/Button";
 import { Text } from "@/components/Text";
 import { useDownloadFile } from "@/hooks/useDownloadFile";
 import { useSettings } from "@/hooks/useSettings";
+import { useTranslation } from "@/hooks/useTranslation";
 import { findFormat, type AudioFormatId } from "@/lib/audio/formats";
 import { LANGUAGES } from "@/lib/languages";
 import { logTitle } from "@/lib/logTitle";
@@ -34,6 +35,7 @@ function languageLabel(log: Log): string | undefined {
 
 export function LogView({ log, audio, audioUrl, onRename }: LogViewProps) {
   const { settings } = useSettings();
+  const { t } = useTranslation();
   const [format, setFormat] = useState<AudioFormatId>(
     settings.downloadFormat,
   );
@@ -45,7 +47,7 @@ export function LogView({ log, audio, audioUrl, onRename }: LogViewProps) {
       <Button asChild variant="ghost" size="sm">
         <Link to="/records">
           <ArrowLeft aria-hidden className="size-4" />
-          Back
+          {t("nav.back")}
         </Link>
       </Button>
       <div className="flex items-center gap-2">
@@ -70,10 +72,10 @@ export function LogView({ log, audio, audioUrl, onRename }: LogViewProps) {
           )}
         </div>
         {converting || failed ? (
-          <Text as="p" size="xs" muted className="w-full text-right">
+          <Text as="p" size="xs" muted className="w-full text-end">
             {converting
-              ? `Preparing ${findFormat(format).label}…`
-              : `Could not convert to ${findFormat(format).label}. Sharing the original.`}
+              ? t("log.preparing", { format: findFormat(format).label })
+              : t("log.convertFailed", { format: findFormat(format).label })}
           </Text>
         ) : null}
       </div>

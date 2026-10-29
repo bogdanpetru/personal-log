@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Input } from "@/components/Input";
+import { useTranslation } from "@/hooks/useTranslation";
 import { Text } from "@/components/Text";
 
 interface RecordingTitleProps {
@@ -8,6 +9,7 @@ interface RecordingTitleProps {
 }
 
 export function RecordingTitle({ title, onCommit }: RecordingTitleProps) {
+  const { t } = useTranslation();
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(title);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -52,7 +54,7 @@ export function RecordingTitle({ title, onCommit }: RecordingTitleProps) {
           }
         }}
         onBlur={commit}
-        aria-label="Recording title"
+        aria-label={t("recorder.title")}
       />
     );
   }

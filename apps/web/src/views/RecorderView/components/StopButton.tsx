@@ -1,15 +1,18 @@
 import { Square } from "lucide-react";
 import { Button } from "@/components/Button";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface StopButtonProps {
   onStop: () => void;
 }
 
 export function StopButton({ onStop }: StopButtonProps) {
+  const { t } = useTranslation();
+
   return (
     <Button
       type="button"
-      aria-label="Stop recording"
+      aria-label={t("recorder.stop")}
       onClick={onStop}
       variant="destructive"
       size="icon-lg"

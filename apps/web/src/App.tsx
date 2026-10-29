@@ -4,6 +4,7 @@ import { Settings as SettingsIcon } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/Button";
 import { usePersonalLog } from "@/hooks/usePersonalLog";
+import { useTranslation } from "@/hooks/useTranslation";
 import { LogListView } from "@/views/LogListView";
 import { LogViewRoute } from "@/views/LogView";
 import { RecorderView } from "@/views/RecorderView";
@@ -13,6 +14,7 @@ import type { LogId } from "@personal-log/plugin-api";
 
 export default function App() {
   const { core, logs, refreshLogs, deleteLog } = usePersonalLog();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const [loaded, setLoaded] = useState(false);
@@ -40,13 +42,13 @@ export default function App() {
 
   const header = (
     <div className="ml-auto flex items-center gap-1">
-      <Button asChild variant="ghost" size="icon-sm" aria-label="Settings">
+      <Button asChild variant="ghost" size="icon-sm" aria-label={t("nav.settings")}>
         <Link to="/settings">
           <SettingsIcon aria-hidden />
         </Link>
       </Button>
       <Button asChild>
-        <Link to="/record">New</Link>
+        <Link to="/record">{t("nav.new")}</Link>
       </Button>
     </div>
   );

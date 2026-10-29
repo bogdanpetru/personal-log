@@ -13,6 +13,7 @@ import {
 } from "@/components/AlertDialog";
 import { Button } from "@/components/Button";
 import { Text } from "@/components/Text";
+import { useTranslation } from "@/hooks/useTranslation";
 import { logTitle } from "@/lib/logTitle";
 import type { Log, LogId } from "@personal-log/plugin-api";
 
@@ -48,6 +49,7 @@ function groupByDay(logs: Log[]): DayGroup[] {
 }
 
 export function LogListView({ logs, onDelete }: LogListViewProps) {
+  const { t } = useTranslation();
   const [pendingId, setPendingId] = useState<LogId | null>(null);
   const groups = groupByDay(logs);
 
@@ -82,7 +84,7 @@ export function LogListView({ logs, onDelete }: LogListViewProps) {
                     type="button"
                     variant="ghost"
                     size="icon-sm"
-                    aria-label="Delete recording"
+                    aria-label={t("list.delete")}
                     className="text-muted-foreground opacity-100 transition-opacity hover:text-destructive sm:opacity-0 sm:group-hover:opacity-100"
                     onClick={() => {
                       setPendingId(log.id);
@@ -103,16 +105,15 @@ export function LogListView({ logs, onDelete }: LogListViewProps) {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete recording?</AlertDialogTitle>
+            <AlertDialogTitle>{t("list.deleteTitle")}</AlertDialogTitle>
             <AlertDialogDescription>
-              This cannot be undone. The recording and its transcript will be
-              removed permanently.
+              {t("list.deleteDescription")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t("list.cancel")}</AlertDialogCancel>
             <AlertDialogAction onClick={confirmDelete}>
-              Delete
+              {t("list.deleteConfirm")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

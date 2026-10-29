@@ -1,5 +1,6 @@
 import { CirclePause, CirclePlay } from "lucide-react";
 import { Button } from "@/components/Button";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface PlayButtonProps {
   playing: boolean;
@@ -7,10 +8,12 @@ interface PlayButtonProps {
 }
 
 export function PlayButton({ playing, onToggle }: PlayButtonProps) {
+  const { t } = useTranslation();
+
   return (
     <Button
       type="button"
-      aria-label={playing ? "Pause playback" : "Play recording"}
+      aria-label={playing ? t("play.pause") : t("play.play")}
       onClick={onToggle}
       variant="outline"
       size="icon"

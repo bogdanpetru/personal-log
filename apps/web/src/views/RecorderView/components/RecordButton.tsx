@@ -1,5 +1,6 @@
 import { Mic } from "lucide-react";
 import { Button } from "@/components/Button";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface RecordButtonProps {
   supported: boolean;
@@ -7,10 +8,12 @@ interface RecordButtonProps {
 }
 
 export function RecordButton({ supported, onToggle }: RecordButtonProps) {
+  const { t } = useTranslation();
+
   return (
     <Button
       type="button"
-      aria-label="Start recording"
+      aria-label={t("recorder.start")}
       disabled={!supported}
       onClick={onToggle}
       variant="default"

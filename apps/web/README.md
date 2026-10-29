@@ -24,10 +24,19 @@ React 19 + TypeScript + Vite + Tailwind v4. Single-page recorder UI.
 Support layers: `hooks/` (`usePersonalLog` wires the core, `useAudioLevel`
 drives the live waveform from the recorder stream), `lib/` (pure non-React
 logic and data: `settings` (persisted defaults), `logTitle`, `audio/`
-(recording formats and the lazy FFmpeg conversion), `languages`,
+(recording formats and the lazy FFmpeg conversion), `i18n/` (supported
+locales, English message map, lazy per-locale chunks), `languages`,
 `languageSearch` — the language codes are a
 curated list because the platform has no API to enumerate languages; labels
 come from `Intl.DisplayNames`).
+
+## Translations
+
+UI strings live in `src/lib/i18n/messages/en.ts` (the source of truth and the
+fallback). Other locales are one file each, loaded as their own chunk only
+when selected; a locale is available once it is listed in
+`src/lib/i18n/locales.ts` and has a matching message file. `useTranslation()`
+returns `t(key, params)` with `{param}` interpolation.
 
 ## Rules
 

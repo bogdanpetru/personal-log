@@ -15,6 +15,7 @@ import { Waveform } from "@/views/RecorderView/components/Waveform";
 import { useAudioLevel } from "@/hooks/useAudioLevel";
 import { usePersonalLog } from "@/hooks/usePersonalLog";
 import { useSettings } from "@/hooks/useSettings";
+import { useTranslation } from "@/hooks/useTranslation";
 import { PlaybackView } from "@/views/PlaybackView";
 import { LANGUAGES } from "@/lib/languages";
 import { logTitle } from "@/lib/logTitle";
@@ -30,6 +31,7 @@ export function RecorderView() {
     renameLog,
   } = usePersonalLog();
   const { settings } = useSettings();
+  const { t } = useTranslation();
   const [language, setLanguage] = useState(settings.language);
   const [title, setTitle] = useState("");
   const levels = useAudioLevel(state.status === "recording", getAudioStream);
@@ -42,7 +44,7 @@ export function RecorderView() {
     <Button asChild variant="ghost" size="sm">
       <Link to="/records">
         <ArrowLeft aria-hidden className="size-4" />
-        Back
+        {t("nav.back")}
       </Link>
     </Button>
   );

@@ -1,12 +1,22 @@
 import { Button } from "@/components/Button";
-import { THEME_LABELS, THEME_MODES, type ThemeMode } from "@/lib/theme";
+import { useTranslation } from "@/hooks/useTranslation";
+import type { MessageKey } from "@/lib/i18n/translate";
+import { THEME_MODES, type ThemeMode } from "@/lib/theme";
 
 interface ThemeSelectorProps {
   value: ThemeMode;
   onChange: (mode: ThemeMode) => void;
 }
 
+const LABELS: Record<ThemeMode, MessageKey> = {
+  system: "theme.system",
+  light: "theme.light",
+  dark: "theme.dark",
+};
+
 export function ThemeSelector({ value, onChange }: ThemeSelectorProps) {
+  const { t } = useTranslation();
+
   return (
     <div
       role="group"
@@ -22,7 +32,7 @@ export function ThemeSelector({ value, onChange }: ThemeSelectorProps) {
           aria-pressed={mode === value}
           onClick={() => onChange(mode)}
         >
-          {THEME_LABELS[mode]}
+          {t(LABELS[mode])}
         </Button>
       ))}
     </div>

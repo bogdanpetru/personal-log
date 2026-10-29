@@ -1,4 +1,5 @@
 import { isAudioFormatId, type AudioFormatId } from "./audio/formats";
+import { defaultLocale, isLocale, type Locale } from "./i18n/locales";
 import { defaultLanguage } from "./languages";
 import { isThemeMode, type ThemeMode } from "./theme";
 
@@ -6,6 +7,7 @@ export interface Settings {
   language: string;
   downloadFormat: AudioFormatId;
   theme: ThemeMode;
+  locale: Locale;
 }
 
 const STORAGE_KEY = "personal-log:settings";
@@ -18,6 +20,7 @@ function fallback(): Settings {
     language: defaultLanguage(),
     downloadFormat: "original",
     theme: "system",
+    locale: defaultLocale(),
   };
 }
 
@@ -41,6 +44,10 @@ function read(): Settings {
         typeof parsed.theme === "string" && isThemeMode(parsed.theme)
           ? parsed.theme
           : defaults.theme,
+      locale:
+        typeof parsed.locale === "string" && isLocale(parsed.locale)
+          ? parsed.locale
+          : defaults.locale,
     };
   } catch {
     return defaults;

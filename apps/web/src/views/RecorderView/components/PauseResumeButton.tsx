@@ -1,5 +1,6 @@
 import { Pause as PauseIcon, Play } from "lucide-react";
 import { Button } from "@/components/Button";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface PauseResumeButtonProps {
   paused: boolean;
@@ -10,10 +11,12 @@ export function PauseResumeButton({
   paused,
   onToggle,
 }: PauseResumeButtonProps) {
+  const { t } = useTranslation();
+
   return (
     <Button
       type="button"
-      aria-label={paused ? "Resume recording" : "Pause recording"}
+      aria-label={paused ? t("recorder.resume") : t("recorder.pause")}
       onClick={onToggle}
       variant="outline"
       size="icon-lg"

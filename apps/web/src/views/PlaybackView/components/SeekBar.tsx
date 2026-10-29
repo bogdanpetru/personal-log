@@ -1,4 +1,5 @@
 import { Slider } from "@/components/Slider";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface SeekBarProps {
   currentTime: number;
@@ -13,11 +14,12 @@ export function SeekBar({
   onSeek,
   className,
 }: SeekBarProps) {
+  const { t } = useTranslation();
   const ready = duration > 0;
 
   return (
     <Slider
-      aria-label="Playback position"
+      aria-label={t("play.position")}
       className={className}
       min={0}
       max={ready ? duration : 1}

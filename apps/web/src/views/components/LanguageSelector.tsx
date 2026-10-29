@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Combobox } from "@/components/Combobox";
+import { useTranslation } from "@/hooks/useTranslation";
 import { searchLanguages } from "@/lib/languageSearch";
 import { LANGUAGES } from "@/lib/languages";
 
@@ -14,6 +15,7 @@ export function LanguageSelector({
   disabled = false,
   onChange,
 }: LanguageSelectorProps) {
+  const { t } = useTranslation();
   const [query, setQuery] = useState("");
   const selectedLabel =
     LANGUAGES.find((option) => option.code === value)?.label ?? value;
@@ -30,9 +32,9 @@ export function LanguageSelector({
       query={query}
       onQueryChange={setQuery}
       onChange={onChange}
-      label="Transcription language"
-      searchPlaceholder="Search languages"
-      emptyLabel={`No languages match "${query}"`}
+      label={t("recorder.language")}
+      searchPlaceholder={t("recorder.searchLanguages")}
+      emptyLabel={t("recorder.noLanguages", { query })}
       placeholder={selectedLabel}
       disabled={disabled}
       className="w-48"
