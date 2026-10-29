@@ -87,7 +87,7 @@ export function RecorderView() {
   return (
     <AppShell header={header}>
       {recording ? (
-        <div className="flex w-full flex-col items-center gap-4">
+        <div className="flex w-full flex-col items-center gap-8 mb-6">
           <Waveform levels={levels} className="mb-4 h-20 w-full text-foreground" />
           <Timer seconds={state.seconds} />
           <div className="flex items-center gap-3">
