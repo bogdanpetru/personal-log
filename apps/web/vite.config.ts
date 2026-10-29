@@ -4,8 +4,10 @@ import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
-// https://vite.dev/config/
+const base = process.env.BASE_PATH ?? "/";
+
 export default defineConfig({
+  base,
   test: {
     environment: "jsdom",
     globals: true,
@@ -31,7 +33,7 @@ export default defineConfig({
         name: "Personal Log",
         short_name: "Personal Log",
         display: "standalone",
-        start_url: "/",
+        start_url: base,
         theme_color: "#0a0a0a",
         background_color: "#0a0a0a",
         icons: [
