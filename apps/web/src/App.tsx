@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link, Navigate, Route, Routes, useLocation, useNavigate } from "react-router";
+import { Settings as SettingsIcon } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/Button";
 import { usePersonalLog } from "@/hooks/usePersonalLog";
 import { LogListView } from "@/views/LogListView";
 import { LogViewRoute } from "@/views/LogView";
 import { RecorderView } from "@/views/RecorderView";
+import { SettingsView } from "@/views/SettingsView";
 import type { LogId } from "@personal-log/plugin-api";
 
 export default function App() {
@@ -36,9 +38,16 @@ export default function App() {
   );
 
   const header = (
-    <Button asChild className="ml-auto">
-      <Link to="/record">New</Link>
-    </Button>
+    <div className="ml-auto flex items-center gap-1">
+      <Button asChild variant="ghost" size="icon-sm" aria-label="Settings">
+        <Link to="/settings">
+          <SettingsIcon aria-hidden />
+        </Link>
+      </Button>
+      <Button asChild>
+        <Link to="/record">New</Link>
+      </Button>
+    </div>
   );
 
   const list = (
@@ -59,6 +68,7 @@ export default function App() {
       <Route path="/records" element={list} />
       <Route path="/record" element={<RecorderView />} />
       <Route path="/records/:logId" element={<LogViewRoute />} />
+      <Route path="/settings" element={<SettingsView />} />
     </Routes>
   );
 }

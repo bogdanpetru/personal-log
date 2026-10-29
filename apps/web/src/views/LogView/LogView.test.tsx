@@ -63,4 +63,14 @@ describe("LogView", () => {
       "Morning notes",
     );
   });
+
+  it("offers the download format next to the share button", () => {
+    renderLogView(log);
+    expect(
+      screen.getByRole("combobox", { name: "Download format" }),
+    ).toHaveTextContent("Original");
+    expect(
+      screen.getByRole("button", { name: "Share recording" }),
+    ).toBeInTheDocument();
+  });
 });

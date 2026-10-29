@@ -14,8 +14,9 @@ import { Timer } from "@/views/RecorderView/components/Timer";
 import { Waveform } from "@/views/RecorderView/components/Waveform";
 import { useAudioLevel } from "@/hooks/useAudioLevel";
 import { usePersonalLog } from "@/hooks/usePersonalLog";
+import { useSettings } from "@/hooks/useSettings";
 import { PlaybackView } from "@/views/PlaybackView";
-import { LANGUAGES, defaultLanguage } from "@/lib/languages";
+import { LANGUAGES } from "@/lib/languages";
 import { logTitle } from "@/lib/logTitle";
 
 export function RecorderView() {
@@ -28,7 +29,8 @@ export function RecorderView() {
     getAudioStream,
     renameLog,
   } = usePersonalLog();
-  const [language, setLanguage] = useState(defaultLanguage());
+  const { settings } = useSettings();
+  const [language, setLanguage] = useState(settings.language);
   const [title, setTitle] = useState("");
   const levels = useAudioLevel(state.status === "recording", getAudioStream);
 

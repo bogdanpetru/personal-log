@@ -127,4 +127,11 @@ describe("App", () => {
     renderApp("/records/missing");
     expect(await screen.findByText("Recording not found.")).toBeInTheDocument();
   });
+
+  it("opens the settings screen", async () => {
+    renderApp("/settings");
+    expect(
+      await screen.findByRole("heading", { name: "Download format" }),
+    ).toBeInTheDocument();
+  });
 });

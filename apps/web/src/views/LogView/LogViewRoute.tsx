@@ -64,6 +64,7 @@ export function LogViewRoute() {
 
   return (
     <LogView
+      key={loaded.log.id}
       log={loaded.log}
       audio={loaded.audio}
       audioUrl={loaded.url}

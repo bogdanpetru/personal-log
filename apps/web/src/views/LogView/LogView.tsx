@@ -1,15 +1,20 @@
-import { useMemo, type ReactNode } from "react";
+import { useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router";
 import { AppShell } from "@/components/AppShell";
 import { Badge } from "@/components/Badge";
 import { Button } from "@/components/Button";
+import { Text } from "@/components/Text";
+import { useDownloadFile } from "@/hooks/useDownloadFile";
+import { useSettings } from "@/hooks/useSettings";
+import { findFormat, type AudioFormatId } from "@/lib/audio/formats";
+import { LANGUAGES } from "@/lib/languages";
+import { logTitle } from "@/lib/logTitle";
+import { FormatSelector } from "@/views/LogView/components/FormatSelector";
+import { ShareButton } from "@/views/LogView/components/ShareButton";
 import { PlaybackView } from "@/views/PlaybackView";
 import { RecordingTitle } from "@/views/components/RecordingTitle";
 import { Transcript } from "@/views/components/Transcript";
-import { ShareButton } from "@/views/LogView/components/ShareButton";
-import { LANGUAGES } from "@/lib/languages";
-import { logTitle } from "@/lib/logTitle";
 import type { Log } from "@personal-log/plugin-api";
 
 interface LogViewProps {
@@ -27,8 +32,15 @@ function languageLabel(log: Log): string | undefined {
   return LANGUAGES.find((option) => option.code === code)?.label ?? code;
 }
 
-function headerFor(log: Log, audio: Blob, audioUrl: string): ReactNode {
-  return (
+export function LogView({ log, audio, audioUrl, onRename }: LogViewProps) {
+  const { settings } = useSettings();
+  const [format, setFormat] = useState<AudioFormatId>(
+    settings.downloadFormat,
+  );
+  const { file, converting, failed } = useDownloadFile(log, audio, format);
+  const language = languageLabel(log);
+
+  const header = (
     <>
       <Button asChild variant="ghost" size="sm">
         <Link to="/records">
@@ -36,17 +48,12 @@ function headerFor(log: Log, audio: Blob, audioUrl: string): ReactNode {
           Back
         </Link>
       </Button>
-      <ShareButton log={log} audio={audio} audioUrl={audioUrl} />
+      <div className="flex items-center gap-2">
+        <FormatSelector value={format} onChange={setFormat} />
+        <ShareButton file={file} busy={converting} />
+      </div>
     </>
   );
-}
-
-export function LogView({ log, audio, audioUrl, onRename }: LogViewProps) {
-  const header = useMemo(
-    () => headerFor(log, audio, audioUrl),
-    [log, audio, audioUrl],
-  );
-  const language = languageLabel(log);
 
   return (
     <AppShell header={header}>
@@ -62,6 +69,13 @@ export function LogView({ log, audio, audioUrl, onRename }: LogViewProps) {
             <Badge variant="secondary">{language}</Badge>
           )}
         </div>
+        {converting || failed ? (
+          <Text as="p" size="xs" muted className="w-full text-right">
+            {converting
+              ? `Preparing ${findFormat(format).label}…`
+              : `Could not convert to ${findFormat(format).label}. Sharing the original.`}
+          </Text>
+        ) : null}
       </div>
       <Transcript
         autoScroll={false}

@@ -17,6 +17,16 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: "autoUpdate",
+      workbox: {
+        globIgnores: ["**/*.wasm"],
+        runtimeCaching: [
+          {
+            urlPattern: /\.wasm$/,
+            handler: "CacheFirst",
+            options: { cacheName: "ffmpeg-core" },
+          },
+        ],
+      },
       manifest: {
         name: "Personal Log",
         short_name: "Personal Log",
