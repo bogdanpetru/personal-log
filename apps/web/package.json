@@ -20,6 +20,7 @@
     "@personal-log/plugin-recorder-media": "workspace:*",
     "@personal-log/plugin-storage-opfs": "workspace:*",
     "@personal-log/plugin-transcription-native": "workspace:*",
+    "@personal-log/plugin-transcription-whisper": "workspace:*",
     "@tailwindcss/vite": "^4.3.3",
     "class-variance-authority": "^0.7.1",
     "cmdk": "^1.1.1",

@@ -34,6 +34,14 @@ const messages = {
   "settings.transcriptionLanguage": "Transcription language",
   "settings.transcriptionLanguageHint":
     "Used when starting a new recording.",
+  "settings.engine": "Transcription engine",
+  "settings.engineHint":
+    "Pick how audio is transcribed. Whisper is downloaded on demand and runs entirely in your browser.",
+  "settings.engineNative": "Native",
+  "settings.engineWhisper": "Whisper",
+  "settings.engineReady": "Model downloaded — running locally",
+  "settings.engineDownloadFailed":
+    "Download failed. The Web engine is still available.",
   "settings.theme": "Theme",
   "settings.themeHint": "Follow the system or pick a theme for this device.",
   "settings.downloadFormat": "Download format",

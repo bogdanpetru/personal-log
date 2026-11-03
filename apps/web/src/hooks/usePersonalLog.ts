@@ -5,6 +5,8 @@ import type { Log, LogId } from "@personal-log/plugin-api";
 import { MediaRecorderRecorder } from "@personal-log/plugin-recorder-media";
 import { OpfsStoragePlugin } from "@personal-log/plugin-storage-opfs";
 import { NativeSpeechPlugin } from "@personal-log/plugin-transcription-native";
+import { TranscriptionEngineSelector } from "../lib/transcription/TranscriptionEngineSelector";
+import { whisperTranscriber } from "../lib/transcription/whisperTranscriber";
 
 interface UsePersonalLog {
   core: PersonalLog;
@@ -26,7 +28,10 @@ interface UsePersonalLog {
 const recorder = new MediaRecorderRecorder();
 const core = new PersonalLog({
   recorder,
-  transcriber: new NativeSpeechPlugin(),
+  transcriber: new TranscriptionEngineSelector(
+    new NativeSpeechPlugin(),
+    whisperTranscriber,
+  ),
   storage: new OpfsStoragePlugin(),
 });
 

@@ -1,10 +1,10 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
-import { getSettings, resetSettings } from "@/lib/settings";
+import { settingsService } from "@/lib/settingsService";
 import { ThemeSwitch } from "./ThemeSwitch";
 
 beforeEach(() => {
-  resetSettings();
+  settingsService.reset();
   document.documentElement.classList.remove("dark");
 });
 
@@ -19,11 +19,11 @@ describe("ThemeSwitch", () => {
   it("cycles system → light → dark → system", () => {
     render(<ThemeSwitch />);
     fireEvent.click(screen.getByRole("button", { name: /Theme: System/ }));
-    expect(getSettings().theme).toBe("light");
+    expect(settingsService.get().theme).toBe("light");
     fireEvent.click(screen.getByRole("button", { name: /Theme: Light/ }));
-    expect(getSettings().theme).toBe("dark");
+    expect(settingsService.get().theme).toBe("dark");
     fireEvent.click(screen.getByRole("button", { name: /Theme: Dark/ }));
-    expect(getSettings().theme).toBe("system");
+    expect(settingsService.get().theme).toBe("system");
   });
 
   it("applies the chosen theme to the document", () => {

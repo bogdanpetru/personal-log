@@ -18,6 +18,7 @@ class FakeRecorder implements Recorder {
   stopped = 0;
   disposed = 0;
   failStart = false;
+  getStream?: () => MediaStream | null;
 
   async start(): Promise<void> {
     if (this.failStart) {
@@ -153,6 +154,29 @@ test("record starts the recorder and a live session with the selected language",
   expect(transcriber.sessionsStarted).toBe(1);
   expect(transcriber.lastOptions).toEqual({ language: "de-DE" });
   expect(core.isTranscriptionSupported()).toBe(true);
+});
+
+test("record passes the recorder's shared stream to the session", async () => {
+  const recorder = new FakeRecorder();
+  const stream = { tracks: [] } as unknown as MediaStream;
+  recorder.getStream = () => stream;
+  const transcriber = new FakeTranscriber();
+  const core = new PersonalLog({ recorder, transcriber });
+  await core.record();
+  expect(transcriber.lastOptions?.stream).toBe(stream);
+});
+
+test("resume passes the recorder's shared stream to the resumed session", async () => {
+  const recorder = new FakeRecorder();
+  const stream = { tracks: [] } as unknown as MediaStream;
+  recorder.getStream = () => stream;
+  const transcriber = new FakeTranscriber();
+  const core = new PersonalLog({ recorder, transcriber });
+  await core.record();
+  core.pause();
+  await core.resume();
+  expect(transcriber.sessionsStarted).toBe(2);
+  expect(transcriber.lastOptions?.stream).toBe(stream);
 });
 
 test("without a transcriber the core runs record-only", async () => {

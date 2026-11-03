@@ -6,6 +6,7 @@ import type { Recording } from "./Recording.js";
  */
 export interface Recorder {
   start(): Promise<void>;
+  getStream?(): MediaStream | null;
   pause(): void;
   resume(): void;
   stop(): Promise<Recording>;

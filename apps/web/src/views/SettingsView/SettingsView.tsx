@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from "@/components/Select";
 import { Text } from "@/components/Text";
+import { useDeferredWhisperOffload } from "@/hooks/useDeferredWhisperOffload";
 import { useSettings } from "@/hooks/useSettings";
 import { useTheme } from "@/hooks/useTheme";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -17,11 +18,13 @@ import { AUDIO_FORMATS, isAudioFormatId } from "@/lib/audio/formats";
 import { LanguageSelector } from "@/views/components/LanguageSelector";
 import { AppLanguageSelector } from "@/views/SettingsView/components/AppLanguageSelector";
 import { ThemeSelector } from "@/views/SettingsView/components/ThemeSelector";
+import { TranscriptionEngineSelector } from "@/views/SettingsView/components/TranscriptionEngineSelector";
 
 export function SettingsView() {
   const { settings, updateSettings } = useSettings();
   const { mode, setMode } = useTheme();
   const { t } = useTranslation();
+  useDeferredWhisperOffload(settings.transcriptionEngine);
 
   const header = (
     <Button asChild variant="ghost" size="sm">
@@ -68,6 +71,19 @@ export function SettingsView() {
           <LanguageSelector
             value={settings.language}
             onChange={(language) => updateSettings({ language })}
+          />
+        </section>
+
+        <section className="flex flex-col gap-2">
+          <Text as="h2" size="sm">
+            {t("settings.engine")}
+          </Text>
+          <Text as="p" size="xs" muted>
+            {t("settings.engineHint")}
+          </Text>
+          <TranscriptionEngineSelector
+            value={settings.transcriptionEngine}
+            onChange={(engine) => updateSettings({ transcriptionEngine: engine })}
           />
         </section>
 

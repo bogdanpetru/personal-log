@@ -157,10 +157,11 @@ export class PersonalLog {
   // ---- Transcription session ----
 
   private async beginSession(): Promise<void> {
-    const options: TranscriptionOptions | undefined =
-      this.activeLanguage === undefined
-        ? undefined
-        : { language: this.activeLanguage };
+    const stream = this.recorder.getStream?.() ?? undefined;
+    const options: TranscriptionOptions = {
+      language: this.activeLanguage,
+      stream,
+    };
     const session = await this.transcriber!.startLive(options);
     session.onFinalResult((text) => {
       // The interim text being committed disappears, so it cannot linger

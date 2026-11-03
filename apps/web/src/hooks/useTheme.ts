@@ -1,11 +1,7 @@
 import { useEffect } from "react";
 import { useSettings } from "./useSettings";
-import {
-  applyTheme,
-  nextThemeMode,
-  watchSystemTheme,
-  type ThemeMode,
-} from "@/lib/theme";
+import { nextThemeMode, type ThemeMode } from "@/lib/theme";
+import { themeService } from "@/lib/themeService";
 
 interface UseTheme {
   mode: ThemeMode;
@@ -18,8 +14,8 @@ export function useTheme(): UseTheme {
   const mode = settings.theme;
 
   useEffect(() => {
-    applyTheme(mode);
-    return watchSystemTheme(() => applyTheme(mode));
+    themeService.apply(mode);
+    return themeService.watchSystem(() => themeService.apply(mode));
   }, [mode]);
 
   return {

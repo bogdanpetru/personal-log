@@ -11,6 +11,7 @@ export interface AudioInput {
 
 export interface TranscriptionOptions {
   language?: string;
+  stream?: MediaStream;
 }
 
 export interface TranscriptionResult {

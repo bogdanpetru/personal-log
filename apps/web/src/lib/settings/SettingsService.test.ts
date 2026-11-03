@@ -1,51 +1,59 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { defaultLocale } from "./i18n/locales";
-import { defaultLanguage } from "./languages";
-import {
-  getSettings,
-  resetSettings,
-  subscribeSettings,
-  updateSettings,
-} from "./settings";
+import { defaultLocale } from "../i18n/locales";
+import { defaultLanguage } from "../languages";
+import { SettingsService } from "./SettingsService";
 
 const STORAGE_KEY = "personal-log:settings";
 
+let settings: SettingsService;
+
 beforeEach(() => {
-  resetSettings();
+  localStorage.clear();
+  settings = new SettingsService();
 });
 
-describe("settings", () => {
-  it("defaults to the browser language and locale, the original format and the system theme", () => {
-    expect(getSettings()).toEqual({
+describe("SettingsService", () => {
+  it("defaults to the browser language and locale, the original format, the system theme and the native engine", () => {
+    expect(settings.get()).toEqual({
       language: defaultLanguage(),
       downloadFormat: "original",
       theme: "system",
       locale: defaultLocale(),
+      transcriptionEngine: "native",
     });
   });
 
   it("persists updates and keeps the snapshot in sync", () => {
-    updateSettings({ language: "de-DE", downloadFormat: "mp3" });
+    settings.update({ language: "de-DE", downloadFormat: "mp3" });
     const expected = {
       language: "de-DE",
       downloadFormat: "mp3",
       theme: "system",
       locale: defaultLocale(),
+      transcriptionEngine: "native",
     };
-    expect(getSettings()).toEqual(expected);
+    expect(settings.get()).toEqual(expected);
     expect(JSON.parse(localStorage.getItem(STORAGE_KEY)!)).toEqual(expected);
   });
 
   it("persists the theme mode", () => {
-    updateSettings({ theme: "dark" });
-    expect(getSettings().theme).toBe("dark");
+    settings.update({ theme: "dark" });
+    expect(settings.get().theme).toBe("dark");
     expect(JSON.parse(localStorage.getItem(STORAGE_KEY)!).theme).toBe("dark");
   });
 
   it("persists the app locale", () => {
-    updateSettings({ locale: "ro" });
-    expect(getSettings().locale).toBe("ro");
+    settings.update({ locale: "ro" });
+    expect(settings.get().locale).toBe("ro");
     expect(JSON.parse(localStorage.getItem(STORAGE_KEY)!).locale).toBe("ro");
+  });
+
+  it("persists the transcription engine", () => {
+    settings.update({ transcriptionEngine: "whisper" });
+    expect(settings.get().transcriptionEngine).toBe("whisper");
+    expect(JSON.parse(localStorage.getItem(STORAGE_KEY)!).transcriptionEngine).toBe(
+      "whisper",
+    );
   });
 
   it("reads stored settings back", () => {
@@ -56,13 +64,16 @@ describe("settings", () => {
         downloadFormat: "wav",
         theme: "light",
         locale: "ro",
+        transcriptionEngine: "whisper",
       }),
     );
-    expect(getSettings()).toEqual({
+    const fresh = new SettingsService();
+    expect(fresh.get()).toEqual({
       language: "fr-FR",
       downloadFormat: "wav",
       theme: "light",
       locale: "ro",
+      transcriptionEngine: "whisper",
     });
   });
 
@@ -74,23 +85,26 @@ describe("settings", () => {
         downloadFormat: "flac",
         theme: "sepia",
         locale: "xx",
+        transcriptionEngine: "cloud",
       }),
     );
-    expect(getSettings()).toEqual({
+    const fresh = new SettingsService();
+    expect(fresh.get()).toEqual({
       language: defaultLanguage(),
       downloadFormat: "original",
       theme: "system",
       locale: defaultLocale(),
+      transcriptionEngine: "native",
     });
   });
 
   it("notifies subscribers until they unsubscribe", () => {
     const listener = vi.fn();
-    const unsubscribe = subscribeSettings(listener);
-    updateSettings({ downloadFormat: "m4a" });
+    const unsubscribe = settings.subscribe(listener);
+    settings.update({ downloadFormat: "m4a" });
     expect(listener).toHaveBeenCalledTimes(1);
     unsubscribe();
-    updateSettings({ downloadFormat: "wav" });
+    settings.update({ downloadFormat: "wav" });
     expect(listener).toHaveBeenCalledTimes(1);
   });
 });

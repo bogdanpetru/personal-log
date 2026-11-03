@@ -2,3 +2,7 @@ packages:
   - "apps/*"
   - "packages/*"
   - "packages/plugins/*"
+allowBuilds:
+  onnxruntime-node: false
+  protobufjs: false
+  sharp: false
