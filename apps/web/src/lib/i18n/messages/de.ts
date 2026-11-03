@@ -43,7 +43,16 @@ const messages: Partial<Messages> = {
   "theme.light": "Hell",
   "theme.dark": "Dunkel",
   "theme.switch": "Design: {current}. Zu {next} wechseln.",
-  "format.original": "Original",
+  "format.original": "Original",  "settings.backup": "Backup",
+  "settings.backupHint": "Alle Einträge als eine Zip-Datei exportieren oder aus einer Sicherungsdatei wiederherstellen. Alles bleibt auf diesem Gerät.",
+  "settings.backupExport": "Zip exportieren",
+  "settings.backupExporting": "Einträge werden gepackt…",
+  "settings.backupExportFailed": "Export fehlgeschlagen — bitte erneut versuchen.",
+  "settings.backupRestore": "Zip wiederherstellen",
+  "settings.backupRestoring": "Wird wiederhergestellt…",
+  "settings.backupRestoreDone": "{imported} wiederhergestellt, {skipped} bereits vorhandene übersprungen.",
+  "settings.backupRestoreFailed": "Die Sicherungsdatei konnte nicht gelesen werden.",
+
 };
 
 export default messages;

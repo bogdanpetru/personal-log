@@ -43,7 +43,16 @@ const messages: Partial<Messages> = {
   "theme.light": "Luminoasă",
   "theme.dark": "Întunecată",
   "theme.switch": "Temă: {current}. Treci la {next}.",
-  "format.original": "Original",
+  "format.original": "Original",  "settings.backup": "Backup",
+  "settings.backupHint": "Exportă toate jurnalele într-un singur fișier zip sau restaurează-le dintr-un backup. Totul rămâne pe acest dispozitiv.",
+  "settings.backupExport": "Exportă zip",
+  "settings.backupExporting": "Se împachetează jurnalele…",
+  "settings.backupExportFailed": "Export eșuat — încearcă din nou.",
+  "settings.backupRestore": "Restaurează zip",
+  "settings.backupRestoring": "Se restaurează…",
+  "settings.backupRestoreDone": "{imported} restaurat(e), {skipped} deja prezente ignorate.",
+  "settings.backupRestoreFailed": "Fișierul de backup nu a putut fi citit.",
+
 };
 
 export default messages;

@@ -43,7 +43,16 @@ const messages: Partial<Messages> = {
   "theme.light": "Açık",
   "theme.dark": "Koyu",
   "theme.switch": "Tema: {current}. {next} temasına geç.",
-  "format.original": "Orijinal",
+  "format.original": "Orijinal",  "settings.backup": "Yedek",
+  "settings.backupHint": "Tüm kayıtları tek bir zip olarak dışa aktarın veya bir yedekten geri yükleyin. Her şey bu cihazda kalır.",
+  "settings.backupExport": "Zip dışa aktar",
+  "settings.backupExporting": "Kayıtlar paketleniyor…",
+  "settings.backupExportFailed": "Dışa aktarma başarısız — tekrar deneyin.",
+  "settings.backupRestore": "Zip geri yükle",
+  "settings.backupRestoring": "Geri yükleniyor…",
+  "settings.backupRestoreDone": "{imported} geri yüklendi, {skipped} zaten mevcut olduğu için atlandı.",
+  "settings.backupRestoreFailed": "Yedek dosyası okunamadı.",
+
 };
 
 export default messages;

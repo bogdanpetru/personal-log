@@ -2,11 +2,7 @@ import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import { PersonalLog } from "@personal-log/core";
 import type { PersonalLogState } from "@personal-log/core";
 import type { Log, LogId } from "@personal-log/plugin-api";
-import { MediaRecorderRecorder } from "@personal-log/plugin-recorder-media";
-import { OpfsStoragePlugin } from "@personal-log/plugin-storage-opfs";
-import { NativeSpeechPlugin } from "@personal-log/plugin-transcription-native";
-import { TranscriptionEngineSelector } from "../lib/transcription/TranscriptionEngineSelector";
-import { whisperTranscriber } from "../lib/transcription/whisperTranscriber";
+import { personalLogCore, personalLogRecorder } from "../lib/personalLogCore";
 
 interface UsePersonalLog {
   core: PersonalLog;
@@ -25,15 +21,8 @@ interface UsePersonalLog {
   renameLog: (logId: LogId, title: string) => Promise<void>;
 }
 
-const recorder = new MediaRecorderRecorder();
-const core = new PersonalLog({
-  recorder,
-  transcriber: new TranscriptionEngineSelector(
-    new NativeSpeechPlugin(),
-    whisperTranscriber,
-  ),
-  storage: new OpfsStoragePlugin(),
-});
+const recorder = personalLogRecorder;
+const core = personalLogCore;
 
 export function usePersonalLog(): UsePersonalLog {
   const getAudioStream = useCallback(() => recorder.getStream(), []);

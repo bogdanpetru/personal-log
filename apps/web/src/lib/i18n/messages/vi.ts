@@ -43,7 +43,16 @@ const messages: Partial<Messages> = {
   "theme.light": "Sáng",
   "theme.dark": "Tối",
   "theme.switch": "Giao diện: {current}. Chuyển sang {next}.",
-  "format.original": "Bản gốc",
+  "format.original": "Bản gốc",  "settings.backup": "Sao lưu",
+  "settings.backupHint": "Xuất mọi nhật ký thành một tệp zip, hoặc khôi phục từ tệp sao lưu. Mọi thứ đều nằm lại trên thiết bị này.",
+  "settings.backupExport": "Xuất zip",
+  "settings.backupExporting": "Đang đóng gói nhật ký…",
+  "settings.backupExportFailed": "Xuất thất bại — thử lại.",
+  "settings.backupRestore": "Khôi phục zip",
+  "settings.backupRestoring": "Đang khôi phục…",
+  "settings.backupRestoreDone": "Đã khôi phục {imported}, bỏ qua {skipped} đã tồn tại.",
+  "settings.backupRestoreFailed": "Không đọc được tệp sao lưu đó.",
+
 };
 
 export default messages;

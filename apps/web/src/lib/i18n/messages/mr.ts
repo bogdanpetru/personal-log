@@ -43,7 +43,16 @@ const messages: Partial<Messages> = {
   "theme.light": "फिकट",
   "theme.dark": "गडद",
   "theme.switch": "थीम: {current}. {next} वर जा.",
-  "format.original": "मूळ",
+  "format.original": "मूळ",  "settings.backup": "बॅकअप",
+  "settings.backupHint": "सर्व लॉग एका zip फाइलमध्ये एक्सपोर्ट करा किंवा बॅकअप फाइलमधून पुनर्संचयित करा. सर्व काही याच उपकरणावर राहते.",
+  "settings.backupExport": "zip एक्सपोर्ट करा",
+  "settings.backupExporting": "लॉग पॅक होत आहेत…",
+  "settings.backupExportFailed": "एक्सपोर्ट अयशस्वी — पुन्हा प्रयत्न करा.",
+  "settings.backupRestore": "zip पुनर्संचयित करा",
+  "settings.backupRestoring": "पुनर्संचयित होत आहे…",
+  "settings.backupRestoreDone": "{imported} पुनर्संचयित, {skipped} आधीच उपस्थित वगळले.",
+  "settings.backupRestoreFailed": "त्या बॅकअप फाइल वाचता आली नाही.",
+
 };
 
 export default messages;

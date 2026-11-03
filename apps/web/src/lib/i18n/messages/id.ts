@@ -43,7 +43,16 @@ const messages: Partial<Messages> = {
   "theme.light": "Terang",
   "theme.dark": "Gelap",
   "theme.switch": "Tema: {current}. Beralih ke {next}.",
-  "format.original": "Asli",
+  "format.original": "Asli",  "settings.backup": "Cadangkan",
+  "settings.backupHint": "Ekspor semua catatan sebagai satu berkas zip, atau pulihkan dari berkas cadangan. Semuanya tetap di perangkat ini.",
+  "settings.backupExport": "Ekspor zip",
+  "settings.backupExporting": "Mengemas catatan…",
+  "settings.backupExportFailed": "Ekspor gagal — coba lagi.",
+  "settings.backupRestore": "Pulihkan zip",
+  "settings.backupRestoring": "Memulihkan…",
+  "settings.backupRestoreDone": "{imported} dipulihkan, {skipped} yang sudah ada dilewati.",
+  "settings.backupRestoreFailed": "Berkas cadangan itu tidak dapat dibaca.",
+
 };
 
 export default messages;

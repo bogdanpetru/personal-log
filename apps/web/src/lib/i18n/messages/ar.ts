@@ -43,7 +43,16 @@ const messages: Partial<Messages> = {
   "theme.light": "فاتح",
   "theme.dark": "داكن",
   "theme.switch": "المظهر: {current}. التبديل إلى {next}.",
-  "format.original": "الأصلي",
+  "format.original": "الأصلي",  "settings.backup": "نسخة احتياطية",
+  "settings.backupHint": "صدِّر جميع السجلات في ملف zip واحد، أو استعدها من ملف نسخة احتياطية. كل شيء يبقى على هذا الجهاز.",
+  "settings.backupExport": "تصدير zip",
+  "settings.backupExporting": "جارٍ تجميع السجلات…",
+  "settings.backupExportFailed": "فشل التصدير — حاول مرة أخرى.",
+  "settings.backupRestore": "استعادة zip",
+  "settings.backupRestoring": "جارٍ الاستعادة…",
+  "settings.backupRestoreDone": "تمت استعادة {imported}، وتخطّي {skipped} موجودة مسبقًا.",
+  "settings.backupRestoreFailed": "تعذّرت قراءة ملف النسخة الاحتياطية هذا.",
+
 };
 
 export default messages;

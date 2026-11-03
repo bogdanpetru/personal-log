@@ -43,7 +43,16 @@ const messages: Partial<Messages> = {
   "theme.light": "Nuru",
   "theme.dark": "Giza",
   "theme.switch": "Mandhari: {current}. Badilisha kwenda {next}.",
-  "format.original": "Asili",
+  "format.original": "Asili",  "settings.backup": "Nakala rudufu",
+  "settings.backupHint": "Hamisha kumbukumbu zote kama faili moja ya zip, au uzirudishe kutoka kwa nakala rudufu. Kila kitu kinabaki kwenye kifaa hiki.",
+  "settings.backupExport": "Hamisha zip",
+  "settings.backupExporting": "Kumbukumbu zinajikunja…",
+  "settings.backupExportFailed": "Uhamishaji umeshindwa — jaribu tena.",
+  "settings.backupRestore": "Rejesha zip",
+  "settings.backupRestoring": "Inarejesha…",
+  "settings.backupRestoreDone": "{imported} zimerejeshwa, {skipped} zilizopo tayari zimerukwa.",
+  "settings.backupRestoreFailed": "Faili hiyo ya nakala rudufu haikusomeka.",
+
 };
 
 export default messages;

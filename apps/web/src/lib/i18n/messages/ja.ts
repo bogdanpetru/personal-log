@@ -43,7 +43,16 @@ const messages: Partial<Messages> = {
   "theme.light": "ライト",
   "theme.dark": "ダーク",
   "theme.switch": "テーマ: {current}。{next} に切り替えます。",
-  "format.original": "オリジナル",
+  "format.original": "オリジナル",  "settings.backup": "バックアップ",
+  "settings.backupHint": "すべてのログを1つのzipファイルに書き出すか、バックアップから復元します。すべてこのデバイス上に残ります。",
+  "settings.backupExport": "zipを書き出す",
+  "settings.backupExporting": "ログをまとめています…",
+  "settings.backupExportFailed": "書き出しに失敗しました — もう一度お試しください。",
+  "settings.backupRestore": "zipから復元",
+  "settings.backupRestoring": "復元しています…",
+  "settings.backupRestoreDone": "{imported}件を復元、{skipped}件は既に存在するためスキップしました。",
+  "settings.backupRestoreFailed": "そのバックアップファイルを読み取れませんでした。",
+
 };
 
 export default messages;

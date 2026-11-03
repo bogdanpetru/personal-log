@@ -49,6 +49,11 @@ describe("SettingsView", () => {
     expect(
       screen.getByRole("heading", { name: "Download format" }),
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Backup" }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Export zip" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Restore zip" })).toBeInTheDocument();
   });
 
   it("persists the chosen theme", () => {

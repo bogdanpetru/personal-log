@@ -43,7 +43,16 @@ const messages: Partial<Messages> = {
   "theme.light": "Clair",
   "theme.dark": "Sombre",
   "theme.switch": "Thème : {current}. Passer à {next}.",
-  "format.original": "Original",
+  "format.original": "Original",  "settings.backup": "Sauvegarde",
+  "settings.backupHint": "Exportez tous les journaux dans un seul fichier zip, ou restaurez-les depuis une sauvegarde. Tout reste sur cet appareil.",
+  "settings.backupExport": "Exporter le zip",
+  "settings.backupExporting": "Empaquetage en cours…",
+  "settings.backupExportFailed": "Échec de l’export — réessayez.",
+  "settings.backupRestore": "Restaurer un zip",
+  "settings.backupRestoring": "Restauration…",
+  "settings.backupRestoreDone": "{imported} restauré(s), {skipped} déjà présent(s) ignoré(s).",
+  "settings.backupRestoreFailed": "Impossible de lire ce fichier de sauvegarde.",
+
 };
 
 export default messages;

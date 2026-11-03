@@ -43,7 +43,16 @@ const messages: Partial<Messages> = {
   "theme.light": "라이트",
   "theme.dark": "다크",
   "theme.switch": "테마: {current}. {next}(으)로 전환합니다.",
-  "format.original": "원본",
+  "format.original": "원본",  "settings.backup": "백업",
+  "settings.backupHint": "모든 로그를 하나의 zip 파일로보내거나 백업 파일에서 복원하세요. 모든 것은 이 기기에만 저장됩니다.",
+  "settings.backupExport": "zip보내기",
+  "settings.backupExporting": "로그 묶는 중…",
+  "settings.backupExportFailed": "보내기 실패 — 다시 시도하세요.",
+  "settings.backupRestore": "zip 복원하기",
+  "settings.backupRestoring": "복원 중…",
+  "settings.backupRestoreDone": "{imported}개 복원, {skipped}개는 이미 있어 건너뜀.",
+  "settings.backupRestoreFailed": "해당 백업 파일을 읽을 수 없습니다.",
+
 };
 
 export default messages;

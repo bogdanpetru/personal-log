@@ -43,7 +43,16 @@ const messages: Partial<Messages> = {
   "theme.light": "浅色",
   "theme.dark": "深色",
   "theme.switch": "主题：{current}。切换到{next}。",
-  "format.original": "原始",
+  "format.original": "原始",  "settings.backup": "备份",
+  "settings.backupHint": "将所有日志导出为一个 zip 文件，或从备份文件恢复。一切内容都保留在此设备上。",
+  "settings.backupExport": "导出 zip",
+  "settings.backupExporting": "正在打包日志…",
+  "settings.backupExportFailed": "导出失败 — 请重试。",
+  "settings.backupRestore": "恢复 zip",
+  "settings.backupRestoring": "正在恢复…",
+  "settings.backupRestoreDone": "已恢复 {imported} 条，跳过 {skipped} 条（已存在）。",
+  "settings.backupRestoreFailed": "无法读取该备份文件。",
+
 };
 
 export default messages;

@@ -43,7 +43,16 @@ const messages: Partial<Messages> = {
   "theme.light": "ஒளி",
   "theme.dark": "இருள்",
   "theme.switch": "தோற்றம்: {current}. {next} க்கு மாறு.",
-  "format.original": "அசல்",
+  "format.original": "அசல்",  "settings.backup": "காப்புப்பிரதி",
+  "settings.backupHint": "அனைத்து பதிவுகளையும் ஒரே zip கோப்பாக ஏற்றுமதி செய்யுங்கள் அல்லது காப்புப்பிரதியிலிருந்து மீட்டெடுங்கள். எல்லாமே இந்த சாதனத்திலேயே இருக்கும்.",
+  "settings.backupExport": "zip ஏற்றுமதி",
+  "settings.backupExporting": "பதிவுகள் ஒன்றுசேர்க்கப்படுகின்றன…",
+  "settings.backupExportFailed": "ஏற்றுமதி தோல்வி — மீண்டும் முயற்சிக்கவும்.",
+  "settings.backupRestore": "zip மீட்டெடு",
+  "settings.backupRestoring": "மீட்டெடுக்கப்படுகிறது…",
+  "settings.backupRestoreDone": "{imported} மீட்டெடுக்கப்பட்டன, {skipped} ஏற்கனவே உள்ளவை தவிர்க்கப்பட்டன.",
+  "settings.backupRestoreFailed": "அந்த காப்புப்பிரதி கோப்பைப் படிக்க முடியவில்லை.",
+
 };
 
 export default messages;

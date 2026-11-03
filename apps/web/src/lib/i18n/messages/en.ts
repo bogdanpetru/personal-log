@@ -53,7 +53,16 @@ const messages = {
   "theme.dark": "Dark",
   "theme.switch": "Theme: {current}. Switch to {next}.",
 
-  "format.original": "Original",
+  "format.original": "Original",  "settings.backup": "Backup",
+  "settings.backupHint": "Export every log as one zip file, or restore logs from a backup. Everything stays on this device.",
+  "settings.backupExport": "Export zip",
+  "settings.backupExporting": "Packing logs…",
+  "settings.backupExportFailed": "Export failed — try again.",
+  "settings.backupRestore": "Restore zip",
+  "settings.backupRestoring": "Restoring…",
+  "settings.backupRestoreDone": "Restored {imported}, skipped {skipped} already present.",
+  "settings.backupRestoreFailed": "Could not read that backup file.",
+
 };
 
 export type Messages = typeof messages;

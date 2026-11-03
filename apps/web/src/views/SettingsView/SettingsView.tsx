@@ -17,6 +17,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { AUDIO_FORMATS, isAudioFormatId } from "@/lib/audio/formats";
 import { LanguageSelector } from "@/views/components/LanguageSelector";
 import { AppLanguageSelector } from "@/views/SettingsView/components/AppLanguageSelector";
+import { BackupSection } from "@/views/SettingsView/components/BackupSection";
 import { ThemeSelector } from "@/views/SettingsView/components/ThemeSelector";
 import { TranscriptionEngineSelector } from "@/views/SettingsView/components/TranscriptionEngineSelector";
 
@@ -118,6 +119,16 @@ export function SettingsView() {
               ))}
             </SelectContent>
           </Select>
+        </section>
+
+        <section className="flex flex-col gap-2">
+          <Text as="h2" size="sm">
+            {t("settings.backup")}
+          </Text>
+          <Text as="p" size="xs" muted>
+            {t("settings.backupHint")}
+          </Text>
+          <BackupSection />
         </section>
       </div>
     </AppShell>

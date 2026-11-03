@@ -43,7 +43,16 @@ const messages: Partial<Messages> = {
   "theme.light": "Светлая",
   "theme.dark": "Тёмная",
   "theme.switch": "Тема: {current}. Переключить на «{next}».",
-  "format.original": "Оригинал",
+  "format.original": "Оригинал",  "settings.backup": "Резервная копия",
+  "settings.backupHint": "Экспортируйте все записи одним zip-файлом или восстановите их из резервной копии. Всё остаётся на этом устройстве.",
+  "settings.backupExport": "Экспорт zip",
+  "settings.backupExporting": "Упаковка записей…",
+  "settings.backupExportFailed": "Ошибка экспорта — попробуйте ещё раз.",
+  "settings.backupRestore": "Восстановить zip",
+  "settings.backupRestoring": "Восстановление…",
+  "settings.backupRestoreDone": "Восстановлено: {imported}, пропущено уже существующих: {skipped}.",
+  "settings.backupRestoreFailed": "Не удалось прочитать файл резервной копии.",
+
 };
 
 export default messages;

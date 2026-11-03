@@ -43,7 +43,16 @@ const messages: Partial<Messages> = {
   "theme.light": "روشن",
   "theme.dark": "گہرا",
   "theme.switch": "تھیم: {current}۔ {next} پر جائیں۔",
-  "format.original": "اصل",
+  "format.original": "اصل",  "settings.backup": "بیک اپ",
+  "settings.backupHint": "تمام لاگز کو ایک zip فائل میں برآمد کریں، یا بیک اپ فائل سے بحال کریں۔ سب کچھ اسی ڈیوائس پر رہتا ہے۔",
+  "settings.backupExport": "zip برآمد کریں",
+  "settings.backupExporting": "لاگز پیک ہو رہے ہیں…",
+  "settings.backupExportFailed": "برآمد ناکام — دوبارہ کوشش کریں۔",
+  "settings.backupRestore": "zip بحال کریں",
+  "settings.backupRestoring": "بحال ہو رہا ہے…",
+  "settings.backupRestoreDone": "{imported} بحال ہوئے، {skipped} پہلے سے موجود ہونے پر نظرانداز کیے گئے۔",
+  "settings.backupRestoreFailed": "اس بیک اپ فائل کو پڑھا نہیں جا سکا۔",
+
 };
 
 export default messages;

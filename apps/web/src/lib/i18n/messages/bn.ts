@@ -43,7 +43,16 @@ const messages: Partial<Messages> = {
   "theme.light": "হালকা",
   "theme.dark": "গাঢ়",
   "theme.switch": "থিম: {current}। {next}-এ যান।",
-  "format.original": "মূল",
+  "format.original": "মূল",  "settings.backup": "ব্যাকআপ",
+  "settings.backupHint": "সব লগ একটি zip ফাইলে এক্সপোর্ট করুন অথবা ব্যাকআপ ফাইল থেকে পুনরুদ্ধার করুন। সবকিছু এই ডিভাইসেই থাকে।",
+  "settings.backupExport": "zip এক্সপোর্ট করুন",
+  "settings.backupExporting": "লগ প্যাক হচ্ছে…",
+  "settings.backupExportFailed": "এক্সপোর্ট ব্যর্থ — আবার চেষ্টা করুন।",
+  "settings.backupRestore": "zip পুনরুদ্ধার করুন",
+  "settings.backupRestoring": "পুনরুদ্ধার হচ্ছে…",
+  "settings.backupRestoreDone": "{imported}টি পুনরুদ্ধার হয়েছে, {skipped}টি আগে থেকেই আছে বলে বাদ গেছে।",
+  "settings.backupRestoreFailed": "ওই ব্যাকআপ ফাইলটি পড়া যায়নি।",
+
 };
 
 export default messages;

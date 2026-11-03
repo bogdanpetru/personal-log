@@ -43,7 +43,16 @@ const messages: Partial<Messages> = {
   "theme.light": "లైట్",
   "theme.dark": "డార్క్",
   "theme.switch": "థీమ్: {current}. {next}కి మారండి.",
-  "format.original": "అసలైనది",
+  "format.original": "అసలైనది",  "settings.backup": "బ్యాకప్",
+  "settings.backupHint": "అన్ని లాగ్స్‌ను ఒకే zip ఫైల్‌గా ఎగుమతి చేయండి లేదా బ్యాకప్ ఫైల్ నుండి పునరుద్ధరించండి. అన్నీ ఈ పరికరంలోనే ఉంటాయి.",
+  "settings.backupExport": "zip ఎగుమతి చేయండి",
+  "settings.backupExporting": "లాగ్స్ ప్యాక్ అవుతున్నాయి…",
+  "settings.backupExportFailed": "ఎగుమతి విఫలమైంది — మళ్లీ ప్రయత్నించండి.",
+  "settings.backupRestore": "zip పునరుద్ధరించండి",
+  "settings.backupRestoring": "పునరుద్ధరిస్తోంది…",
+  "settings.backupRestoreDone": "{imported} పునరుద్ధరించబడ్డాయి, {skipped} ఇప్పటికే ఉన్నాయి కాబట్టి దాటవేయబడ్డాయి.",
+  "settings.backupRestoreFailed": "ఆ బ్యాకప్ ఫైల్‌ను చదవలేకపోయాం.",
+
 };
 
 export default messages;
