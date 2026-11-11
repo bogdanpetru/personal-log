@@ -48,7 +48,7 @@ export class OpfsStoragePlugin implements StoragePlugin {
     }
     const matched = logs
       .filter((log) => matchesFilter(log, filter))
-      .sort((a, b) => a.createdAt.localeCompare(b.createdAt))
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
       .slice(skip, skip + limit);
     // A cheap listing for consumers that only want metadata; text is tiny
     // locally, but a remote backend saves a fetch by being asked this way.
